@@ -1,14 +1,12 @@
-from random import uniform
-
 import time
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 
 def obtain_time(funct, a, b, v_mode=False, num_points=10000):
-    tic = time.process_time();
+    tic = time.process_time()
     integrate_mc(funct, a, b, v_mode, num_points)
-    toc = time.process_time();
+    toc = time.process_time()
     return 1000 * (toc - tic)
 
 def time_test(funct, a, b):
@@ -31,8 +29,8 @@ def iterative_mode(funct, a, b, max_value, num_points):
     count = 0
 
     for i in range(0, num_points):
-        montecarlo_dots[i, 0] = uniform(a, b)
-        montecarlo_dots[i, 1] = uniform(0, max_value)
+        montecarlo_dots[i, 0] = np.random.uniform(a, b)
+        montecarlo_dots[i, 1] = np.random.uniform(0, max_value)
         
         if(funct(montecarlo_dots[i, 0]) >= montecarlo_dots[i, 1]): 
             count += 1
@@ -60,7 +58,7 @@ def integrate_mc(funct, a, b, v_mode=False, num_points=10000):
         function_dots[i] = funct(a + step * i)
 
     # obtain max value
-    max_value =  np.max(function_dots)
+    max_value = np.max(function_dots)
 
     # montecarlo integrate result
     if v_mode == False: 
