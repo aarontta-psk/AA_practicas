@@ -63,5 +63,3 @@ def compute_gradient_test(target):
     assert np.allclose(dj_dw, -10.0), f"Case 1: dj_dw is wrong: {dj_dw} != -10.0"   
     
     print("\033[92mAll tests passed!")
-    
-
