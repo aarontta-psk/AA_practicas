@@ -27,6 +27,7 @@ def compute_cost(X, y, w, b):
       y (ndarray (m,)) : target values
       w (ndarray (n,)) : model parameters  
       b (scalar)       : model parameter
+
     Returns
       cost (scalar)    : cost
     """
@@ -41,7 +42,8 @@ def compute_gradient(X, y, w, b):
       X : (ndarray Shape (m,n)) matrix of examples 
       y : (ndarray Shape (m,))  target value of each example
       w : (ndarray Shape (n,))  parameters of the model      
-      b : (scalar)              parameter of the model      
+      b : (scalar)              parameter of the model
+
     Returns
       dj_dw : (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
       dj_db : (scalar)             The gradient of the cost w.r.t. the parameter b. 
@@ -50,8 +52,7 @@ def compute_gradient(X, y, w, b):
     return dj_db, dj_dw
 
 
-def gradient_descent(X, y, w_in, b_in, cost_function,
-                     gradient_function, alpha, num_iters):
+def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
     """
     Performs batch gradient descent to learn theta. Updates theta by taking 
     num_iters gradient steps with learning rate alpha
