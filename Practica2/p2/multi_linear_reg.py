@@ -1,7 +1,5 @@
 import numpy as np
 import copy
-import math
-
 
 def zscore_normalize_features(X):
     """
@@ -15,20 +13,10 @@ def zscore_normalize_features(X):
       mu (ndarray (n,))     : mean of each feature
       sigma (ndarray (n,))  : standard deviation of each feature
     """
-    m = X.shape[0]
 
-    X_norm = np.empty()
-    mu = np.empty()
-    sigma = np.empty()
-
-    for i in range(m):
-      mu_i = np.median(X[i])
-      sigma_i = np.cov(X[i])
-
-      X_norm = np.append(np.dot(X[i], mu_i / sigma_i))
-
-      mu.append(mu_i)
-      sigma.append(sigma_i)
+    mu = np.mean(X)
+    sigma = np.std(X)
+    X_norm = (X - mu) / sigma
 
     return (X_norm, mu, sigma)
 
@@ -45,6 +33,7 @@ def compute_cost(X, y, w, b):
     Returns
       cost (scalar)    : cost
     """
+
     m = X.shape[0]
 
     cost_sum = 0
@@ -72,6 +61,7 @@ def compute_gradient(X, y, w, b):
       dj_dw : (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
       dj_db : (scalar)             The gradient of the cost w.r.t. the parameter b. 
     """
+
     m = X.shape[0]
 
     dj_dw = 0
@@ -88,7 +78,7 @@ def compute_gradient(X, y, w, b):
     dj_dw /= m
     dj_db /= m
 
-    return dj_db, dj_dw
+    return dj_dw, dj_db
 
 
 def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
@@ -114,6 +104,7 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
       J_history : (ndarray): Shape (num_iters,) J at each iteration,
           primarily for graphing later
     """
+    
     m = len(X[0])
 
     J_history = []
@@ -126,13 +117,8 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
         w -= alpha * dj_dw
         b -= alpha * dj_db
 
-    for i in num_iters:
+    for i in range(num_iters):
         cost = cost_function(X, y, w, b)
-        J_history.append(cost)
-
-    # e = 0
-    # for i in math.ceil(num_iters, e) :
-    #     print()  
-
+        J_history.append(cost) 
 
     return w, b, J_history
