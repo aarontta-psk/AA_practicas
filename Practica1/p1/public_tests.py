@@ -39,6 +39,7 @@ def compute_cost_test(target):
     assert  np.isclose(cost, 4.525), f"Case 5: Cost must be 4.525 but got {cost}"
     
     print("\033[92mAll tests passed!")
+    print("\033[0m", end = '')
     
 def compute_gradient_test(target):
     print("Using X with shape (4, 1)")
@@ -63,3 +64,4 @@ def compute_gradient_test(target):
     assert np.allclose(dj_dw, -10.0), f"Case 1: dj_dw is wrong: {dj_dw} != -10.0"   
     
     print("\033[92mAll tests passed!")
+    print("\033[0m", end = '')

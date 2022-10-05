@@ -18,35 +18,46 @@ def compute_g_descent(data):
 
     return w, b, costs
 
-def dataPlot():
+def render_data():
     data = ut.load_data()
 
     plt.figure()
-    subplot = plt.subplot()
-    subplot.spines.right.set_visible(False)
-    subplot.spines.top.set_visible(False)
-    plt.title("Profits vs. Population per city")
-    plt.ylabel("Profit in $10,000")
-    plt.xlabel("Population of City in 10,000s")
+    
+    plt.title("Profits vs. Population")
+    plt.ylabel("Profits (10,000$)")
+    plt.xlabel("Population of City (10,000s)")
+    
     plt.scatter(data[0], data[1], c='red', marker='x')
-    plt.savefig("data.png")
+    
+    # subplot = plt.subplot()
+    # subplot.spines.right.set_visible(False)
+    # subplot.spines.top.set_visible(False)
 
-def plotLinearFit(w, b):
+def plot():
+    render_data()
+
+    plt.savefig("./results/data.png")
+    plt.close('all')
+
+def plot_linear(w, b):
+    render_data()
+    
     data = ut.load_data()
     x = data[0]
-    plt.plot(x, w*x+b, c='blue')
-    plt.savefig("linear_fit.png")
+
+    plt.plot(x, w * x + b, c='blue')
+
+    plt.savefig("./results/linear_fit.png")
+    plt.close('all')
 
 def main():
     pt.compute_cost_test(lr.compute_cost)
     pt.compute_gradient_test(lr.compute_gradient)
     
-    w, b, _ = compute_g_descent(ut.load_data())
+    w, b, costs = compute_g_descent(ut.load_data())
 
-    dataPlot()
-    plotLinearFit(w, b)
-
-    print("\033[0m", end = '')
+    plot()
+    plot_linear(w, b)
 
 if __name__ == '__main__':
     main()

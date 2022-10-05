@@ -2,7 +2,6 @@ import numpy as np
 import copy
 import math
 
-
 #########################################################################
 # Cost function
 #
@@ -43,7 +42,8 @@ def compute_gradient(x, y, w, b):
     Args:
       x (ndarray): Shape (m,) Input to the model (Population of cities) 
       y (ndarray): Shape (m,) Label (Actual profits for the cities)
-      w, b (scalar): Parameters of the model  
+      w, b (scalar): Parameters of the model
+      
     Returns
       dj_dw (scalar): The gradient of the cost w.r.t. the parameters w
       dj_db (scalar): The gradient of the cost w.r.t. the parameter b     
@@ -100,18 +100,13 @@ def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, 
     w = copy.deepcopy(w_in)
     b = copy.deepcopy(b_in)
 
-    for i in range(m):
+    for i in range(num_iters):
         dj_dw, dj_db = gradient_function(x, y, w, b)
 
         w -= alpha * dj_dw
         b -= alpha * dj_db
 
-    for i in range(num_iters):
         cost = cost_function(x, y, w, b)
-        J_history.append(cost)
-
-    # e = 0
-    # for i in math.ceil(num_iters, e) :
-    #     print()   
+        J_history.append(cost) 
 
     return w, b, J_history
