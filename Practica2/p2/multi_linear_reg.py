@@ -36,16 +36,18 @@ def compute_cost(X, y, w, b):
 
     m = X.shape[0]
 
-    cost_sum = 0
+    # cost_sum = 0
 
-    for i in range(m):
-        f_wb = np.dot(w, X[i]) + b
-        cost = (f_wb - y[i]) ** 2
-        cost_sum += cost
+    # for i in range(m):
+    #     f_wb = np.dot(w, X[i]) + b
+    #     cost = (f_wb - y[i]) ** 2
+    #     cost_sum += cost
+
+    cost_sum = ((X @ w + b) - y) ** 2
 
     cost = (1 / (2 * m)) * cost_sum
 
-    return cost
+    return np.sum(cost)
 
 
 def compute_gradient(X, y, w, b):
@@ -64,21 +66,24 @@ def compute_gradient(X, y, w, b):
 
     m = X.shape[0]
 
-    dj_dw = 0
-    dj_db = 0
+    # dj_dw = 0
+    # dj_db = 0
 
-    for i in range(m):
-        f_wb = np.dot(w, X[i]) + b
-        dj_dw_i = np.dot((f_wb - y[i]), X[i])
-        dj_db_i = (f_wb - y[i])
+    # for i in range(m):
+    #     f_wb = np.dot(w, X[i]) + b
+    #     dj_dw_i = np.dot((f_wb - y[i]), X[i])
+    #     dj_db_i = (f_wb - y[i])
 
-        dj_dw += dj_dw_i
-        dj_db += dj_db_i
+    #     dj_dw += dj_dw_i
+    #     dj_db += dj_db_i
+
+    dj_dw = X.T @ ((X @ w + b) - y)
+    dj_db = ((X @ w + b) - y)
 
     dj_dw /= m
     dj_db /= m
 
-    return dj_dw, dj_db
+    return dj_dw, np.sum(dj_db)
 
 
 def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
@@ -111,13 +116,12 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
     w = copy.deepcopy(w_in)
     b = b_in
 
-    for i in range(m):
+    for i in range(num_iters):
         dj_dw, dj_db = gradient_function(X, y, w, b)
 
         w -= alpha * dj_dw
         b -= alpha * dj_db
 
-    for i in range(num_iters):
         cost = cost_function(X, y, w, b)
         J_history.append(cost) 
 

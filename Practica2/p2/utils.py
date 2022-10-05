@@ -1,7 +1,7 @@
 import numpy as np
 
 def load_data():
-    return np.loadtxt("./Practica2/p2/data/houses.txt", delimiter=',')
+    return np.loadtxt("./data/houses.txt", delimiter=',')
 
 def getNormalizedData():
     data = load_data()

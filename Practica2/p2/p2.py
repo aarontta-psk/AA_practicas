@@ -39,14 +39,14 @@ def testPrice(w, b, mu, sigma):
     # $318709
     
 def main():
-    # pt.compute_cost_test(mlr.compute_cost)
-    # pt.compute_gradient_test(mlr.compute_gradient)
+    pt.compute_cost_test(mlr.compute_cost)
+    pt.compute_gradient_test(mlr.compute_gradient)
 
     dataN, mu, sigma = getNormalizedData()
     w, b, _ = compute_g_descent(dataN)
     testPrice(w, b, mu, sigma)
 
-    print("\033[0m", end = '')
+    # print("\033[0m", end = '')
 
 if __name__ == '__main__':
     main()

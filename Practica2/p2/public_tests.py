@@ -14,22 +14,23 @@ def compute_cost_test(target):
     X_train, y_train, w_init, b_init = test_data()
     cost = target(X_train, y_train, w_init, b_init)
     target_cost = 1.5578904045996674e-12
-    assert cost == target_cost, f"Case 1: Cost must be {target_cost} for a perfect prediction but got {cost}"
+    assert round(cost, 5) == round(target_cost, 5), f"Case 1: Cost must be {target_cost} for a perfect prediction but got {cost}"
 
     print("\033[92mAll tests passed!")
+    print("\033[0m", end = '')
 
 
 def compute_gradient_test(target):
     X_train, y_train, w_init, b_init = test_data()
 
-    dj_db, dj_dw = target(X_train, y_train, w_init, b_init)
+    dj_dw, dj_db = target(X_train, y_train, w_init, b_init)
     #assert dj_dw.shape == w_init.shape, f"Wrong shape for dj_dw. {dj_dw} != {w_init.shape}"
 
     target_dj_db = -1.6739251122999121e-06
     target_dj_dw = [-2.73e-3, - 6.27e-6, - 2.22e-6, - 6.92e-5]
 
-    assert dj_db == target_dj_db, f"Case 1: dj_db is wrong: {dj_db} != {target_dj_db}"
-    assert np.allclose(
-        dj_dw, target_dj_dw, rtol=1e-02), f"Case 1: dj_dw is wrong: {dj_dw} != {target_dj_dw}"
+    assert round(dj_db, 5) == round(target_dj_db, 5), f"Case 1: dj_db is wrong: {dj_db} != {target_dj_db}"
+    assert np.allclose(dj_dw, target_dj_dw, rtol=1e-02), f"Case 1: dj_dw is wrong: {dj_dw} != {target_dj_dw}"
 
     print("\033[92mAll tests passed!")
+    print("\033[0m", end = '')
