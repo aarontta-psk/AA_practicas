@@ -86,6 +86,11 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
     Returns:
       total_cost: (scalar)         cost 
     """
+    m = X.shape[0]
+
+    cost = compute_cost(X, y, w, b)
+    reg_factor = (lambda_ / (2 * m)) * np.sum(w ** 2)
+    total_cost = cost + reg_factor
 
     return total_cost
 
@@ -106,9 +111,15 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
       dj_dw: (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
 
     """
+    m = X.shape[0]
 
-    return dj_db, dj_dw
+    dj_dw = X.T @ (sigmoid(X @ w + b) - y)
+    dj_db = (sigmoid(X @ w + b) - y)
 
+    dj_dw /= m
+    dj_db /= m
+
+    return np.sum(dj_db), dj_dw + (lambda_ * w / m)
 
 #########################################################################
 # gradient descent

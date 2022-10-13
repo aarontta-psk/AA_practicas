@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 def load_data():
     return np.loadtxt("./data/ex2data1.txt", delimiter=',')
 
+def load_data2():
+    return np.loadtxt("./data/ex2data2.txt", delimiter=',')
+
 def plot_data(X, y, pos_label="y=1", neg_label="y=0"):
     positive = y == 1
     negative = y == 0
@@ -32,8 +35,9 @@ def sig(z):
 
 def plot_decision_boundary(w, b, X, y):
     # Credit to dibgerge on Github for this plotting code
-
     plot_data(X[:, 0:2], y)
+
+    print(X.shape[1])
 
     if X.shape[1] <= 2:
         plot_x = np.array([min(X[:, 0]), max(X[:, 0])])

@@ -5,7 +5,7 @@ import multi_linear_reg as mlr
 import matplotlib as plt
 import numpy as np
 
-def getNormalizedData():
+def get_nrm_data():
     data = ut.load_data()
     dataN, mu, sigma = mlr.zscore_normalize_features(data[:, :4])
     # Apend last column of data to dataN
@@ -42,7 +42,7 @@ def main():
     pt.compute_cost_test(mlr.compute_cost)
     pt.compute_gradient_test(mlr.compute_gradient)
 
-    dataN, mu, sigma = getNormalizedData()
+    dataN, mu, sigma = get_nrm_data()
     w, b, _ = compute_g_descent(dataN)
     testPrice(w, b, mu, sigma)
 
