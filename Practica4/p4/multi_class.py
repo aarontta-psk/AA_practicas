@@ -14,7 +14,7 @@ def oneVsAll(X, y, n_labels, lambda_):
      ----------
      X : array_like
          The input dataset of shape (m x n). m is the number of
-         data points, and n is the number of features. 
+         data points, and n 0is the number of features. 
 
      y : array_like
          The data labels. A vector of shape (m, ).
@@ -33,6 +33,13 @@ def oneVsAll(X, y, n_labels, lambda_):
          (ie. `n_labels`) and n is number of features without the bias.
      """
 
+    m = X.shape[0]
+    n = X.shape[1]
+
+    
+
+    all_theta = 0
+    
     return all_theta
 
 
