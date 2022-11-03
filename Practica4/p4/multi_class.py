@@ -1,5 +1,5 @@
 import numpy as np
-
+import logistic_reg as lgr
 
 #########################################################################
 # one-vs-all
@@ -36,9 +36,17 @@ def oneVsAll(X, y, n_labels, lambda_):
     m = X.shape[0]
     n = X.shape[1]
 
-    
+    w_in = np.zeros(n)
+    b_in = 0
+    alpha = 0.0001
+    n_iters = 1000
 
-    all_theta = 0
+    all_theta = np.zeros([n_labels, n + 1])
+
+    for i in range(n_labels):
+        classif = (y == i)
+        w, b, _ = lgr.gradient_descent(X, classif, w_in, b_in, lgr.compute_cost_reg, lgr.compute_gradient_reg,  alpha, n_iters, lambda_)
+        all_theta[i] = np.append(b, w)
     
     return all_theta
 
@@ -69,6 +77,13 @@ def predictOneVsAll(all_theta, X):
     p : array_like
         The predictions for each data point in X. This is a vector of shape (m, ).
     """
+
+    m = X.shape[0]
+
+    p = np.zeros(m)
+
+    for i in range(m):
+        p[m] = np.argmax(lgr.sigmoid(np.append(1, X[i]) @ all_theta.T))
 
     return p
 

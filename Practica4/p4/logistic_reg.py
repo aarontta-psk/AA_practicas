@@ -38,7 +38,7 @@ def compute_cost(X, y, w, b, lambda_=None):
     m = y.shape[0]
 
     f_wb = sigmoid(X @ w + b)
-    loss = (-y @ np.log(f_wb)) - ((1 - y ) @ np.log(1 - f_wb))
+    loss = (~y @ np.log(f_wb)) - ((1 - y) @ np.log(1 - f_wb))
     total_cost = np.sum(loss) / m
 
     return total_cost
