@@ -1,3 +1,4 @@
+from copy import deepcopy
 import numpy as np
 import logistic_reg as lgr
 
@@ -38,8 +39,8 @@ def oneVsAll(X, y, n_labels, lambda_):
 
     w_in = np.zeros(n)
     b_in = 0
-    alpha = 0.0001
-    n_iters = 1000
+    alpha = 1
+    n_iters = 1500
 
     all_theta = np.zeros([n_labels, n + 1])
 
@@ -83,7 +84,7 @@ def predictOneVsAll(all_theta, X):
     p = np.zeros(m)
 
     for i in range(m):
-        p[m] = np.argmax(lgr.sigmoid(np.append(1, X[i]) @ all_theta.T))
+        p[i] = np.argmax(lgr.sigmoid(np.append(1, X[i]) @ all_theta.T))
 
     return p
 
@@ -114,5 +115,24 @@ def predict(theta1, theta2, X):
         Predictions vector containing the predicted label for each example.
         It has a length equal to the number of examples.
     """
+# a(1) = x(1) : (4,1)
+# z(2) = Θ(1) . a(1) : (5,1)
+# a(2) = g(z(2)) : (5,1)
+# add a(2)
+# 0 → a(2) : (6,1)
+# z(3) = Θ(2)
+# a(2) : (3,1)
+# a(3) = g(z(3)) : (3,1)
+
+    m = X.shape[0]
+    a1 = np.column_stack([np.ones((m, 1)), X])
+    z2 = a1 @ theta1.T
+
+    a2 = lgr.sigmoid(z2)
+    a2 = np.column_stack([np.ones((m, 1)), a2])
+    z3 = a2 @ theta2.T
+
+    a3 = lgr.sigmoid(z3)
+    p = np.argmax(a3, axis=1)
 
     return p

@@ -48,23 +48,22 @@ import scipy.io as sc
 
 def main():
     data = sc.loadmat('data/ex3data1.mat', squeeze_me=True)
+    data_w = sc.loadmat('data/ex3weights.mat', squeeze_me=True)
 
-    X = data['X']
-    y = data['y']
+    X, y = data['X'], data['y']
+    theta1, theta2 = data_w['Theta1'], data_w['Theta2']
 
     n_labels = 10
-    lambda_ = 0.01
+    lambda_ = 0.001
 
     p = mt.predictOneVsAll(mt.oneVsAll(X, y, n_labels, lambda_), X)
+    acc = np.sum(y == p) / y.shape[0] * 100
 
-    acc = np.sum(y == p) / y.shape[0]
+    p_w = mt.predict(theta1, theta2, X)
+    acc_w = np.sum(y == p_w) / y.shape[0] * 100
 
     print(acc)
-
-    w, b, costs = compute_g_descent(ut.load_data())
-    w, b, costs = compute_g_descent_reg(ut.load_data2())
-    # dataN, mu, sigma = getNormalizedData()
-    # testPrice(w, b, mu, sigma)
+    print(acc_w)
 
     print("\033[0m", end = '')
 
