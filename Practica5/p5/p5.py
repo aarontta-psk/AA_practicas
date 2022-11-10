@@ -11,10 +11,9 @@ def main():
     theta1, theta2 = data_w['Theta1'], data_w['Theta2']
 
     n_labels = 10
-    lambda_ = 0.001
+    lambda_ = 1
 
     y_onehot = np.zeros((y.shape[0], n_labels))
-
     for i in range(y.shape[0]):
         y_onehot[i][y[i]] = 1
 

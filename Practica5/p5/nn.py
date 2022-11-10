@@ -43,12 +43,13 @@ def cost(theta1, theta2, X, y, lambda_):
 
     h0 = a3 = lgr.sigmoid(z3)
 
-    t1 = (np.log(h0).T @ y)
-    t2 = (np.log(1 - h0).T @ (1 - y))
+    t1 = (y * np.log(h0))
+    t2 = ((1 - y) * np.log(1 - h0))
 
-    n = t1 + t2
-
-    J = -(1 / m) * np.sum(n)
+    cost = t1 + t2
+    reg_factor = np.sum(pow(theta1[:, 1:], 2)) + np.sum(pow(theta2[:, 1:], 2))
+    J = (-1 / m) * np.sum(cost)
+    J += (lambda_ / (2 * m)) * reg_factor
 
     return J
 
