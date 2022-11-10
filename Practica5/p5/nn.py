@@ -1,6 +1,5 @@
 import numpy as np
-
-
+import logistic_reg as lgr
 
 def cost(theta1, theta2, X, y, lambda_):
     """
@@ -33,6 +32,23 @@ def cost(theta1, theta2, X, y, lambda_):
 
     """
 
+    m = X.shape[0]
+
+    a1 = np.column_stack([np.ones((m, 1)), X])
+    z2 = a1 @ theta1.T
+
+    a2 = lgr.sigmoid(z2)
+    a2 = np.column_stack([np.ones((m, 1)), a2])
+    z3 = a2 @ theta2.T
+
+    h0 = a3 = lgr.sigmoid(z3)
+
+    t1 = (np.log(h0).T @ y)
+    t2 = (np.log(1 - h0).T @ (1 - y))
+
+    n = t1 + t2
+
+    J = -(1 / m) * np.sum(n)
 
     return J
 
