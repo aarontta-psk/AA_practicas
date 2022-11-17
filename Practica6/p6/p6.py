@@ -18,15 +18,26 @@ def main():
     X, y, x_ideal, y_ideal = gen_data(65)
 
     X = X[:, None]
+    m = X.shape[0]
 
     X_train, X_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.33, random_state=1)
 
     poly = skp.PolynomialFeatures(degree=15, include_bias=False)
-    poly.fit_transform(X_train, y_train)
+    poly.fit_transform(X_train)
+    poly.fit_transform(X_test)
 
     std = skp.StandardScaler()
-    std.fit_transform(X_train, y_train)
+    std.fit_transform(X_train)
+    std.fit_transform(X_test)
 
+    linear = skl.LinearRegression()
+    linear.fit(X_train)
+
+    error_train = (linear.predict(X_train) - y)**2 / (2*m)
+    error_test = (linear.predict(X_test) - y)**2 / (2*m)
+
+    print(error_train)
+    print(error_test)
 
 
     print("\033[0m", end = '')
