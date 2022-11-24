@@ -56,30 +56,17 @@ def plot_train(X, y, x_ideal, y_ideal, X_predict, y_predict, fileName):
     plt.close()
 
 def plot_error(num_data, error_data_train, error_data_cv, fileName, linewidth = 4):
-
-    # print(num_data)
-    # print(error_data_train)
-    # print(error_data_cv)
-
-    # plt.figure()
-
-    # plt.xlabel("Num casos")
-    # plt.ylabel("Error")
-
-    # plt.plot(num_data, error_data_train, c='cyan', label='error_train', linewidth=3)
-    # plt.plot(num_data, error_data_cv,c='orange', label='error_cv', linewidth=3)
-
-    # plt.legend()
-    # # plt.savefig(fileName)
-    # plt.show()
-    # plt.close()
     plt.figure()
-    plt.plot(num_data, error_data_train, 'b-', label='train', linewidth=linewidth)
-    plt.plot(num_data, error_data_cv, '-', label='val', color='orange', linewidth=linewidth)
-    plt.ylabel('Error')
-    plt.xlabel('Number of Examples (m)')
+
+    plt.xlabel("Num casos")
+    plt.ylabel("Error")
+
+    plt.plot(num_data, error_data_train, c='cyan', label='error_train', linewidth=3)
+    plt.plot(num_data, error_data_cv,c='orange', label='error_cv', linewidth=3)
+
     plt.legend()
-    plt.show()
+    plt.savefig(fileName) # plt.show()
+    plt.close()
 
 def test_error():
     num_data = np.linspace(50, 1000, 20)
@@ -99,11 +86,11 @@ def test_error():
         error_data_train[value], _, _ = calc_error(poly, scalar, model, x_train, y_train)
         error_data_cv[value], _, _ = calc_error(poly, scalar, model, x_cv, y_cv)
 
-    plot_error(num_data, error_data_train, error_data_cv, './p6/docs/test_error.pdf')
+    plot_error(num_data[1:], error_data_train[1:], error_data_cv[1:], './p6/docs/test_error.pdf')
 
 def test_hiper_parameters(X, y, x_ideal, y_ideal):
-    x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.4, random_state=1)
-    x_test, x_cv, y_test, y_cv= skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
+    x_train, x_, y_train, y_ = skm.train_test_split(X, y, test_size=0.4, random_state=1)
+    x_test, x_cv, y_test, y_cv = skm.train_test_split(x_, y_, test_size=0.5, random_state=1)
 
     degrees = 15
     lambdas = np.array([1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 300, 600, 900])
@@ -118,11 +105,11 @@ def test_hiper_parameters(X, y, x_ideal, y_ideal):
     print("Min index:", min)
 
     lambda_id = int(min/len(lambdas))
-    proper_lambda = lambdas[lambda_id]  # MASSIVE PROBLEM, COLOSSAL EVEN
+    proper_lambda = lambdas[lambda_id]
     proper_degree = min - (len(lambdas) * lambda_id) + 1 
     print("Proper degree:", proper_degree)
     print("Proper lambda:", proper_lambda)
-    print("Error degree&lambda:", error_data)
+    # print("Error degree&lambda:", error_data)
 
     poly, scalar, model = train(x_train, y_train, proper_degree, proper_lambda)
 
@@ -132,8 +119,8 @@ def test_hiper_parameters(X, y, x_ideal, y_ideal):
     plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './p6/docs/test_hiper_parameters.pdf')
 
 def test_lambda(X, y, x_ideal, y_ideal):
-    x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.4, random_state=1)
-    x_cv, x_test, y_cv, y_test = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
+    x_train, x_, y_train, y_ = skm.train_test_split(X, y, test_size=0.4, random_state=1)
+    x_cv, x_test, y_cv, y_test = skm.train_test_split(x_, y_, test_size=0.5, random_state=1)
 
     degree = 15
     lambdas = np.array([1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 300, 600, 900])
@@ -154,8 +141,8 @@ def test_lambda(X, y, x_ideal, y_ideal):
     plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './p6/docs/test_lambda.pdf')
 
 def test_degree(X, y, x_ideal, y_ideal):
-    x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.4, random_state=1)
-    x_cv, x_test, y_cv, y_test = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
+    x_train, x_, y_train, y_ = skm.train_test_split(X, y, test_size=0.4, random_state=1)
+    x_cv, x_test, y_cv, y_test = skm.train_test_split(x_, y_, test_size=0.5, random_state=1)
 
     error_data = np.zeros(10) # degree from 1 to 10 [(0,9) + 1]
     for temp_degree in range(len(error_data)):
@@ -200,7 +187,7 @@ def main():
     X = X[:, None]
     test_hiper_parameters(X, y, x_ideal, y_ideal)
 
-    # test_error()
+    test_error()
 
     print("\033[0m", end = '')
 
