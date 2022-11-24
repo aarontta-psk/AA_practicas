@@ -103,10 +103,10 @@ def test_error():
 
 def test_hiper_parameters(X, y, x_ideal, y_ideal):
     x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.4, random_state=1)
-    x_test, x_cv, y_test, y_cv = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
+    x_test, x_cv, y_test, y_cv= skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
 
     degrees = 15
-    lambdas = np.array([1**-6, 1**-5, 1**-4, 1**-3, 1**-2, 1**-1, 1, 10, 100, 300, 600, 900])
+    lambdas = np.array([1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 300, 600, 900])
     error_data = np.zeros((len(lambdas), degrees))
     for temp_lambda in range(len(lambdas)):
         for temp_degree in range(degrees):
@@ -115,36 +115,37 @@ def test_hiper_parameters(X, y, x_ideal, y_ideal):
             error_data[temp_lambda, temp_degree], _, _ = calc_error(poly, scalar, model, x_cv, y_cv)
 
     min = np.argmin(error_data)
-    print(min)
+    print("Min index:", min)
 
     lambda_id = int(min/len(lambdas))
-    proper_lambda = lambdas[lambda_id] + 1  # MASSIVE PROBLEM, COLOSSAL EVEN
+    proper_lambda = lambdas[lambda_id]  # MASSIVE PROBLEM, COLOSSAL EVEN
     proper_degree = min - (len(lambdas) * lambda_id) + 1 
-    print(proper_degree)
-    print(proper_lambda)
-    # print(error_data)
+    print("Proper degree:", proper_degree)
+    print("Proper lambda:", proper_lambda)
+    print("Error degree&lambda:", error_data)
 
     poly, scalar, model = train(x_train, y_train, proper_degree, proper_lambda)
 
-    _, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
+    error, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
+    print("Error test:", error)
 
     plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './p6/docs/test_hiper_parameters.pdf')
 
 def test_lambda(X, y, x_ideal, y_ideal):
     x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.4, random_state=1)
-    x_test, x_cv, y_test, y_cv = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
+    x_cv, x_test, y_cv, y_test = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
 
     degree = 15
-    lambdas = np.array([1**-6, 1**-5, 1**-4, 1**-3, 1**-2, 1**-1, 1, 10, 100, 300, 600, 900])
+    lambdas = np.array([1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 300, 600, 900])
     error_data = np.zeros(len(lambdas))
     for temp_lambda in range(len(lambdas)):
         poly, scalar, model = train(x_train, y_train, degree, lambdas[temp_lambda])
 
         error_data[temp_lambda], _, _ = calc_error(poly, scalar, model, x_cv, y_cv)
 
-    proper_lambda = lambdas[np.argmin(error_data) + 1] # MASSIVE PROBLEM, COLOSSAL EVEN
-    print(proper_lambda)
-    # print(error_data)
+    proper_lambda = lambdas[np.argmin(error_data)] # MASSIVE PROBLEM, COLOSSAL EVEN
+    print("Proper lambda:", proper_lambda)
+    # print("Error lambda:", error_data)
 
     poly, scalar, model = train(x_train, y_train, degree, proper_lambda)
 
@@ -154,7 +155,7 @@ def test_lambda(X, y, x_ideal, y_ideal):
 
 def test_degree(X, y, x_ideal, y_ideal):
     x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.4, random_state=1)
-    x_test, x_cv, y_test, y_cv = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
+    x_cv, x_test, y_cv, y_test = skm.train_test_split(x_test, y_test, test_size=0.5, random_state=1)
 
     error_data = np.zeros(10) # degree from 1 to 10 [(0,9) + 1]
     for temp_degree in range(len(error_data)):
@@ -163,8 +164,8 @@ def test_degree(X, y, x_ideal, y_ideal):
         error_data[temp_degree], _, _ = calc_error(poly, scalar, model, x_cv, y_cv)
 
     proper_degree = np.argmin(error_data) + 1
-    print(proper_degree)
-    # print(error_data)
+    print("Proper degree:", proper_degree)
+    # print("Error degree:", error_data)
 
     poly, scalar, model = train(x_train, y_train, proper_degree)
 
@@ -175,15 +176,14 @@ def test_degree(X, y, x_ideal, y_ideal):
 
 def test_start(X, y, x_ideal, y_ideal):
     x_train, x_test, y_train, y_test = skm.train_test_split(X, y, test_size=0.33, random_state=1)
-    x_train_copy = x_train
 
     poly, scalar, model = train(x_train, y_train)
 
-    error_train, _, y_train_predict = calc_error(poly, scalar, model , x_train_copy, y_train)
+    error_train, _, y_train_predict = calc_error(poly, scalar, model , x_train, y_train)
     error_test, _, _ = calc_error(poly, scalar, model, x_test, y_test)
 
-    print(error_train)
-    print(error_test)
+    print("Error train:", error_train)
+    print("Error test:", error_test)
 
     plot_train(X, y, x_ideal, y_ideal, x_train, y_train_predict, './p6/docs/test_start.pdf')
 
@@ -200,7 +200,7 @@ def main():
     X = X[:, None]
     test_hiper_parameters(X, y, x_ideal, y_ideal)
 
-    test_error()
+    # test_error()
 
     print("\033[0m", end = '')
 
