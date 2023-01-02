@@ -51,7 +51,7 @@ def apply_svm(data_path, kernel_type, c, sigma):
 
 def get_best_svm_parameters():
     values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-    svm, X, y = skl_svm.SVC(), np.zeros(1), np.zeros(1)
+    svm, X, y = skl_svm.SVC(), np.empty(), np.empty()
 
     best_acc, c_id, sigma_id = -1, 0, 0
     for c in range(len(values)):
