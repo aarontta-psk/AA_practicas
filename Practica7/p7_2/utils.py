@@ -2,6 +2,10 @@ import re
 import nltk
 import nltk.stem.porter
 
+import os 
+
+def obtainAllDirectoryFiles(dir):
+    return [os.path.join(dir, dir_file) for dir_file in os.listdir(dir) if os.path.isfile(os.path.join(dir, dir_file))]
 
 def preProcess(email):
 
