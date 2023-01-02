@@ -8,6 +8,10 @@ import sklearn.metrics as skme
 
 import logistic_reg as lgr
 
+import nn as nn
+import multi_class as mc
+import scipy.optimize as sciopt
+
 # import sys
 
 def transcribe_emails(emails, default_value=0):
@@ -55,6 +59,12 @@ def apply_svm(x_train, y_train, x_val, y_val, c, sigma):
 
     return skme.accuracy_score(y_val, predict), svm
 
+def onehot(y_train, n_labels):
+    y_onehot = np.zeros((y_train.shape[0], n_labels))
+    for i in range(y_train.shape[0]):
+        y_onehot[i][y_train[i]] = 1
+    return y_onehot
+
 def obtain_svm(x_train, y_train, x_val, y_val):
     values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
     svm = skl_svm.SVC()
@@ -94,6 +104,38 @@ def obtain_reg_log(x_train, y_train, x_val, y_val):
 
     return w, b
 
+def obtain_neural_network(x_train, y_train, x_val, y_val):
+    output_labels = 2               # spam or not spam
+    input_labels = len(x_train[0])  # list words email
+    hidden_labels = 25              # because I can
+
+    epsilon = 0.12            # s[curr_l + 1] s[curr_l] + 1
+    theta1 = np.random.random((hidden_labels, input_labels + 1)) * (2 * epsilon) - epsilon
+    theta2 = np.random.random((output_labels, hidden_labels + 1)) * (2 * epsilon) - epsilon
+
+    y_onehot = onehot(y_train, output_labels)
+
+    # lambdas = np.array([1e-6, 1e-5, 1e-4, 0.001, 0.01, 0.1, 1, 10, 50, 100, 500])
+    lambdas = [0.000001, 0.00001, 0.001, 0.01, 0.1, 1, 5, 20]
+    num_iters = 1000
+    th_1 = th_2 = np.empty(shape=1)
+    best_acc = -1 
+    for temp_lambda in range(len(lambdas)):
+        theta = np.concatenate([np.ravel(theta1), np.ravel(theta2)])
+        res = sciopt.minimize(fun=nn.backprop_min, x0=theta, args=(x_train, y_onehot, theta1.shape, theta2.shape, lambdas[temp_lambda]), method='TNC', jac=True, options={'maxiter': num_iters})
+        theta_1 = np.reshape(res.x[:theta1.shape[0] * theta1.shape[1]], (theta1.shape[0], theta1.shape[1]))
+        theta_2 = np.reshape(res.x[theta1.shape[0] * theta1.shape[1]:], (theta2.shape[0], theta2.shape[1]))
+        
+        print('Lambda: ', lambdas[temp_lambda])
+
+        p = mc.predict(theta1, theta2, x_val)
+        accuracy = np.sum(y_val == p) / y_val.shape[0]
+        if(best_acc < accuracy):
+            best_acc = accuracy
+            th_1, th_2  = theta_1, theta_2
+
+    return th_1, th_2
+
 def check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test):
     svm = obtain_svm(x_train, y_train, x_val, y_val)
     accuracy = skme.accuracy_score(y_test, svm.predict(x_test))
@@ -104,17 +146,23 @@ def check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test):
     predict = lgr.predict(x_test, w, b)
     accuracy = np.sum(y_test == predict) / y_test.shape[0]
     print("Logistic regression accuracy: ", accuracy)
+    
+def check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test):
+    theta1, theta2 = obtain_neural_network(x_train, y_train, x_val, y_val)
+    p = mc.predict(theta1, theta2, x_test)
+    accuracy = np.sum(y_test == p) / y_test.shape[0]
+    print("Neural network accuracy: ", accuracy)
 
 def main(training_sys='svm'):
     x_train, y_train, x_val, y_val, x_test, y_test = preprocess()
     print("Preload finished.")
 
-    if training_sys == 'svm':
+    if training_sys == 'svm':   # SVM accuracy:  0.9803030303030303
         check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
-    elif training_sys == 'nn':
-        return 1
-    elif training_sys == 'log':
+    elif training_sys == 'nn':  # Neural network accuracy:  0.9772727272727273
+        check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
+    elif training_sys == 'log': # Logistic regression accuracy:  0.9757575757575757
         check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
 
 if __name__ == '__main__':
-    main('log')
+    main('nn')
