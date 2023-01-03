@@ -1,8 +1,10 @@
 import numpy as np
 from matplotlib import pyplot
 
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
-def displayData(X, example_width=None, figsize=(10, 10)):
+def display_data(X, example_width=None, figsize=(10, 10)):
     """
     Displays 2D data stored in X in a nice grid.
     """

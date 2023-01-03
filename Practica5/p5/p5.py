@@ -1,8 +1,9 @@
 import nn as nn
 import multi_class as mc
-import numpy as np
+
 import utils as ut
-import matplotlib.pyplot as plt
+
+import numpy as np
 import scipy.io as sc
 import scipy.optimize as sciopt
 

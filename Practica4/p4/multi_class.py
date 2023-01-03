@@ -1,6 +1,6 @@
-from copy import deepcopy
-import numpy as np
 import logistic_reg as lgr
+
+import numpy as np
 
 #########################################################################
 # one-vs-all
@@ -75,18 +75,17 @@ def predictOneVsAll(all_theta, X):
 
     Returns
     -------
-    p : array_like
+    predict : array_like
         The predictions for each data point in X. This is a vector of shape (m, ).
     """
 
     m = X.shape[0]
 
-    p = np.zeros(m)
-
+    predict = np.zeros(m)
     for i in range(m):
-        p[i] = np.argmax(lgr.sigmoid(np.append(1, X[i]) @ all_theta.T))
+        predict[i] = np.argmax(lgr.sigmoid(np.append(1, X[i]) @ all_theta.T))
 
-    return p
+    return predict
 
 
 #########################################################################
@@ -111,20 +110,24 @@ def predict(theta1, theta2, X):
 
     Return 
     ------
-    p : array_like
+    predict : array_like
         Predictions vector containing the predicted label for each example.
         It has a length equal to the number of examples.
     """
 
     m = X.shape[0]
+
+    # first layer (input)
     a1 = np.column_stack([np.ones((m, 1)), X])
     z2 = a1 @ theta1.T
 
+    # second layer (hidden)
     a2 = lgr.sigmoid(z2)
     a2 = np.column_stack([np.ones((m, 1)), a2])
     z3 = a2 @ theta2.T
 
+    # third layer (output)
     a3 = lgr.sigmoid(z3)
-    p = np.argmax(a3, axis=1)
+    predict = np.argmax(a3, axis=1)
 
-    return p
+    return predict
