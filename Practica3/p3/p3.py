@@ -1,4 +1,4 @@
-import logistic_reg as lr
+import logistic_reg as lgr
 
 import public_tests as pt
 import utils as ut 
@@ -14,18 +14,18 @@ def compute_logistic_reg_gradient_descent(X_data, y_data, lambda_=None):
     num_iters = 10000
 
     # we obtain w and b here
-    w, b, costs = lr.gradient_descent(X_train, y_train, w_in, b_in, lr.compute_cost, lr.compute_gradient, alpha, num_iters)
+    w, b, costs = lgr.gradient_descent(X_train, y_train, w_in, b_in, lgr.compute_cost, lgr.compute_gradient, alpha, num_iters)
 
     return w, b, costs
 
 def main():
     # initial tests for logistic reg functions
-    pt.sigmoid_test(lr.sigmoid)
-    pt.compute_cost_test(lr.compute_cost)
-    pt.compute_gradient_test(lr.compute_gradient)
-    pt.compute_cost_reg_test(lr.compute_cost_reg)
-    pt.compute_gradient_reg_test(lr.compute_gradient_reg)
-    pt.predict_test(lr.predict)
+    pt.sigmoid_test(lgr.sigmoid)
+    pt.compute_cost_test(lgr.compute_cost)
+    pt.compute_gradient_test(lgr.compute_gradient)
+    pt.compute_cost_reg_test(lgr.compute_cost_reg)
+    pt.compute_gradient_reg_test(lgr.compute_gradient_reg)
+    pt.predict_test(lgr.predict)
 
     # parameters acquisition and visualization 
     X_data, y_data = ut.load_data('./data/ex2data1.txt')
