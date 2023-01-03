@@ -64,7 +64,7 @@ def time_test(funct, a, b):
     plt.scatter(test_sizes, it_times, c='red', label='iterative')
     plt.scatter(test_sizes, vec_times, c='blue', label='vectorized')
     plt.legend()
-    plt.savefig('graph.pdf')
+    plt.savefig('./results/time_graph.png')
 
 def integrate_mc(funct, a, b, num_points=10000, vec_mode=False):
     # empty function array 

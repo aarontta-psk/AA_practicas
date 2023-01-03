@@ -19,26 +19,31 @@ def compute_cost(x, y, w, b):
                to fit the data points in x and y
     """
 
+    # the shape attribute returns the dimensions of the array [x.shape = (n,m)]
     m = x.shape[0]
 
-    cost_sum = 0
+    # unoptimized
+    # cost = 0
+    # for i in range(m):
+    #     f_wb = w * x[i] + b
+    #     cost_tmp = (f_wb - y[i]) ** 2
+    #     cost += cost_tmp
 
-    for i in range(m):
-        f_wb = w * x[i] + b
-        cost = (f_wb - y[i]) ** 2
-        cost_sum += cost
+    # optimized
+    f_wb = w * x + b
+    cost = np.sum((f_wb - y) ** 2)
 
-    total_cost = (1 / (2 * m)) * cost_sum
+    cost /= 2 * m
 
-    return total_cost
-
+    return cost
 
 #########################################################################
 # Gradient function
 #
 def compute_gradient(x, y, w, b):
     """
-    Computes the gradient for linear regression 
+    Computes the gradient for linear regression
+
     Args:
       x (ndarray): Shape (m,) Input to the model (Population of cities) 
       y (ndarray): Shape (m,) Label (Actual profits for the cities)
@@ -49,27 +54,32 @@ def compute_gradient(x, y, w, b):
       dj_db (scalar): The gradient of the cost w.r.t. the parameter b     
     """
 
+    # the shape attribute returns the dimensions of the array [x.shape = (n,m)]
     m = x.shape[0]
 
-    dj_dw = 0
-    dj_db = 0
+    # unoptimized
+    # dj_dw = 0
+    # dj_db = 0
+    # for i in range(m):
+    #     f_wb = w * x[i] + b
+    #     dj_dw_i = (f_wb - y[i]) * x[i]
+    #     dj_db_i = (f_wb - y[i])
 
-    for i in range(m):
-        f_wb = w * x[i] + b
-        dj_dw_i = (f_wb - y[i]) * x[i]
-        dj_db_i = (f_wb - y[i])
+    #     dj_dw += dj_dw_i
+    #     dj_db += dj_db_i
 
-        dj_dw += dj_dw_i
-        dj_db += dj_db_i
+    # optimized
+    f_wb = w * x + b
+    dj_dw = np.sum((f_wb - y) * x)
+    dj_db = np.sum((f_wb - y))
 
     dj_dw /= m
     dj_db /= m
 
     return dj_dw, dj_db
 
-
 #########################################################################
-# gradient descent
+# Gradient descent
 #
 def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
     """
@@ -94,13 +104,11 @@ def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, 
           primarily for graphing later
     """
 
-    m = len(x)
-
     J_history = []
     w = copy.deepcopy(w_in)
     b = copy.deepcopy(b_in)
 
-    for i in range(num_iters):
+    for _ in range(num_iters):
         dj_dw, dj_db = gradient_function(x, y, w, b)
 
         w -= alpha * dj_dw

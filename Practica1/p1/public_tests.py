@@ -42,7 +42,7 @@ def compute_cost_test(target):
     print("\033[0m", end = '')
     
 def compute_gradient_test(target):
-    print("Using X with shape (4, 1)")
+    # print("Using X with shape (4, 1)")
     # Case 1
     x = np.array([2, 4, 6, 8]).T
     y = np.array([4.5, 8.5, 12.5, 16.5]).T

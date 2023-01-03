@@ -1,63 +1,30 @@
 import public_tests as pt
 import utils as ut
+
 import linear_reg as lr
 
-import matplotlib.pyplot as plt
-
-def compute_g_descent(data):
-    x = data[0]
-    y = data[1]
-
-    w_in = 0
-    b_in = 0
+def compute_linear_reg_gradient_descent(data):
+    # initial data and parameters
+    x, y = data[0], data[1]
+    w_in = b_in = 0
 
     alpha = 0.01
     num_iters = 1500
 
+    # we obtain the best w and b here
     w, b, costs = lr.gradient_descent(x, y, w_in, b_in, lr.compute_cost, lr.compute_gradient, alpha, num_iters)
 
     return w, b, costs
 
-def render_data():
-    data = ut.load_data()
-
-    plt.figure()
-    
-    plt.title("Profits vs. Population")
-    plt.ylabel("Profits (10,000$)")
-    plt.xlabel("Population of City (10,000s)")
-    
-    plt.scatter(data[0], data[1], c='red', marker='x')
-    
-    # subplot = plt.subplot()
-    # subplot.spines.right.set_visible(False)
-    # subplot.spines.top.set_visible(False)
-
-def plot():
-    render_data()
-
-    plt.savefig("./results/data.png")
-    plt.close('all')
-
-def plot_linear(w, b):
-    render_data()
-    
-    data = ut.load_data()
-    x = data[0]
-
-    plt.plot(x, w * x + b, c='blue')
-
-    plt.savefig("./results/linear_fit.png")
-    plt.close('all')
-
 def main():
+    # initial tests for linear reg functions
     pt.compute_cost_test(lr.compute_cost)
     pt.compute_gradient_test(lr.compute_gradient)
     
-    w, b, costs = compute_g_descent(ut.load_data())
-
-    plot()
-    plot_linear(w, b)
+    # parameters acquisition and visualization
+    data = ut.load_data('./data/ex1data1.txt')
+    w, b, _ = compute_linear_reg_gradient_descent(data)
+    ut.plot_linear_reg('./results/linear_reg_fit.png', w, b, data)
 
 if __name__ == '__main__':
     main()
