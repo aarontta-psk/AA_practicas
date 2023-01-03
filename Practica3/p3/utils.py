@@ -1,20 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def load_data(path):
+    data = np.loadtxt(path, delimiter=',')
+    X, y = data[:,:-1], data[:,-1]
+    return X, y
 
-def load_data():
-    return np.loadtxt("./data/ex2data1.txt", delimiter=',')
-
-def load_data2():
-    return np.loadtxt("./data/ex2data2.txt", delimiter=',')
-
-def plot_data(X, y, pos_label="y=1", neg_label="y=0"):
-    positive = y == 1
-    negative = y == 0
-
-    plt.plot(X[positive, 0], X[positive, 1], 'k+', label=pos_label)
-    plt.plot(X[negative, 0], X[negative, 1], 'yo', label=neg_label)
-
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
 def map_feature(X1, X2, degree=6):
     """
@@ -28,16 +21,19 @@ def map_feature(X1, X2, degree=6):
             out.append((X1**(i-j) * (X2**j)))
     return np.stack(out, axis=1)
 
+def map_data_features(X_data, y_data):
+    return np.column_stack((map_feature(X_data[:,0], X_data[:,1]), y_data))
 
-def sig(z):
-    return 1/(1+np.exp(-z))
+def plot_data(X, y, pos_label="y=1", neg_label="y=0"):
+    positive = y == 1
+    negative = y == 0
 
+    plt.plot(X[positive, 0], X[positive, 1], 'k+', label=pos_label)
+    plt.plot(X[negative, 0], X[negative, 1], 'yo', label=neg_label)
 
 def plot_decision_boundary(w, b, X, y):
     # Credit to dibgerge on Github for this plotting code
     plot_data(X[:, 0:2], y)
-
-    print(X.shape[1])
 
     if X.shape[1] <= 2:
         plot_x = np.array([min(X[:, 0]), max(X[:, 0])])
@@ -54,10 +50,18 @@ def plot_decision_boundary(w, b, X, y):
         # Evaluate z = theta*x over the grid
         for i in range(len(u)):
             for j in range(len(v)):
-                z[i, j] = sig(np.dot(map_feature(u[i], v[j]), w) + b)
+                z[i, j] = sigmoid(np.dot(map_feature(u[i], v[j]), w) + b)
 
         # important to transpose z before calling contour
         z = z.T
 
         # Plot z = 0
         plt.contour(u, v, z, levels=[0.5], colors="g")
+
+def plot_logistic_reg(path, X_train, y_train, w, b):
+    plt.figure()
+
+    plot_decision_boundary(w, b, X_train, y_train)
+
+    plt.savefig(path)
+    plt.close('all')

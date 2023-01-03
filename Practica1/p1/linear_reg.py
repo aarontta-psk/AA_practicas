@@ -1,6 +1,5 @@
-import numpy as np
 import copy
-import math
+import numpy as np
 
 #########################################################################
 # Cost function
@@ -15,7 +14,7 @@ def compute_cost(X, y, w, b):
         w, b (scalar): Parameters of the model
 
     Returns
-        total_cost (float): The cost of using w, b as the parameters for linear regression
+        cost (float): The cost of using w, b as the parameters for linear regression
                to fit the data points in x and y
     """
 

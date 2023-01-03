@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def load_data(path):
     data = np.loadtxt(path, delimiter=',', skiprows=1)
-    X, y = data[:,:4], data[:,4]
+    X, y = data[:,:-1], data[:,-1]
     return X, y
 
 def normalize_data(X_data, y_data):

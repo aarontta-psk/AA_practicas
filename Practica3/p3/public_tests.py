@@ -7,6 +7,7 @@ def sigmoid_test(target):
     assert np.allclose(target(np.array([[2.5, -2.5], [0, 1]])), 
                        [[0.92414182, 0.07585818], [0.5, 0.73105858]]), "Failed for 2D array"
     print('\033[92mAll tests passed!')
+    print("\033[0m", end = '')
     
 def compute_cost_test(target):
     X = np.array([[0, 0, 0, 0]]).T
@@ -41,6 +42,7 @@ def compute_cost_test(target):
     assert np.isclose(result, 0.4529660647), f"Wrong output. Expected: {0.4529660647} got: {result}. Did you inizialized z_wb = b?"
     
     print('\033[92mAll tests passed!')
+    print("\033[0m", end = '')
     
 def compute_gradient_test(target):
     np.random.seed(1)
@@ -48,13 +50,14 @@ def compute_gradient_test(target):
     y = np.array([1, 0, 1, 0, 1, 1, 0])
     test_w = np.array([1, 0.5, -0.35])
     test_b = 1.7
-    dj_db, dj_dw  = target(X, y, test_w, test_b)
+    dj_dw, dj_db = target(X, y, test_w, test_b)
     
     assert np.isclose(dj_db, 0.28936094), f"Wrong value for dj_db. Expected: {0.28936094} got: {dj_db}" 
     assert dj_dw.shape == test_w.shape, f"Wrong shape for dj_dw. Expected: {test_w.shape} got: {dj_dw.shape}" 
     assert np.allclose(dj_dw, [-0.11999166, 0.41498775, -0.71968405]), f"Wrong values for dj_dw. Got: {dj_dw}"
 
     print('\033[92mAll tests passed!') 
+    print("\033[0m", end = '')
     
 def predict_test(target):
     np.random.seed(5)
@@ -80,6 +83,7 @@ def predict_test(target):
     assert np.allclose(result,expected_2), f"Wrong output: Expected : {expected_2} got: {result}"
 
     print('\033[92mAll tests passed!')
+    print("\033[0m", end = '')
     
 def compute_cost_reg_test(target):
     np.random.seed(1)
@@ -110,6 +114,7 @@ def compute_cost_reg_test(target):
     assert np.isclose(output, expected), f"Wrong output. Expected: {expected} got:{output}"
     
     print('\033[92mAll tests passed!') 
+    print("\033[0m", end = '')
     
 def compute_gradient_reg_test(target):
     np.random.seed(1)
@@ -119,11 +124,10 @@ def compute_gradient_reg_test(target):
     y = np.array([0, 1, 1, 0, 1, 1, 0])
     lambda_ = 0.1
     expected1 = (-0.1506447567869257, np.array([ 0.19530838, -0.00632206,  0.19687367,  0.15741161,  0.02791437]))
-    dj_db, dj_dw = target(X, y, w, b, lambda_)
+    dj_dw, dj_db = target(X, y, w, b, lambda_)
     
     assert np.isclose(dj_db, expected1[0]), f"Wrong dj_db. Expected: {expected1[0]} got: {dj_db}"
     assert np.allclose(dj_dw, expected1[1]), f"Wrong dj_dw. Expected: {expected1[1]} got: {dj_dw}"
-
     
     w = np.random.randn(7)
     b = 0
@@ -132,8 +136,9 @@ def compute_gradient_reg_test(target):
     lambda_ = 0
     expected2 = (0.02660329857573818, np.array([ 0.23567643, -0.06921029, -0.19705212, -0.0002884 ,  0.06490588,
         0.26948175,  0.10777992]))
-    dj_db, dj_dw = target(X, y, w, b, lambda_)
+    dj_dw, dj_db = target(X, y, w, b, lambda_)
     assert np.isclose(dj_db, expected2[0]), f"Wrong dj_db. Expected: {expected2[0]} got: {dj_db}"
     assert np.allclose(dj_dw, expected2[1]), f"Wrong dj_dw. Expected: {expected2[1]} got: {dj_dw}"
     
-    print('\033[92mAll tests passed!') 
+    print('\033[92mAll tests passed!')
+    print("\033[0m", end = '')

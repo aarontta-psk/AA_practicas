@@ -1,64 +1,42 @@
+import logistic_reg as lr
+
 import public_tests as pt
 import utils as ut 
-import logistic_reg as lr
+
 import numpy as np
-import matplotlib.pyplot as plt
 
-def compute_g_descent(data):
-    x_train = data[:,:-1]
-    y_train = data[:,-1]
+def compute_logistic_reg_gradient_descent(X_data, y_data, lambda_=None):
+    # initial data and parameters
+    X_train, y_train = X_data, y_data
+    w_in, b_in = np.zeros(X_train.shape[1]), -8 if lambda_ is None else 1
 
-    w_in = np.zeros(x_train.shape[1])
-    b_in = -8
-
-    alpha = 0.001
+    alpha = 0.001 if lambda_ is None else 0.01
     num_iters = 10000
 
-    w, b, costs = lr.gradient_descent(x_train, y_train, w_in, b_in, lr.compute_cost, lr.compute_gradient, alpha, num_iters)
-
-    plt.figure()
-    ut.plot_decision_boundary(w, b, x_train, y_train)
-    plt.savefig("./results/data.png")
-    plt.close('all')
-
-    return w, b, costs
-
-def compute_g_descent_reg(data):
-    new_data = np.column_stack((ut.map_feature(data[:,0], data[:,1]), data[:,-1]))
-
-    x_train = new_data[:,:-1]
-    y_train = new_data[:,-1]
-
-    w_in = np.zeros(x_train.shape[1])
-    b_in = 1
-
-    lambda_ = 0.01
-    alpha = 0.01
-    num_iters = 10000
-
-    w, b, costs = lr.gradient_descent(x_train, y_train, w_in, b_in, lr.compute_cost_reg, lr.compute_gradient_reg, alpha, num_iters, lambda_)
-
-    plt.figure()
-    ut.plot_decision_boundary(w, b, x_train, y_train)
-    plt.savefig("./results/data_reg.png")
-    plt.close('all')
+    # we obtain w and b here
+    w, b, costs = lr.gradient_descent(X_train, y_train, w_in, b_in, lr.compute_cost, lr.compute_gradient, alpha, num_iters)
 
     return w, b, costs
 
 def main():
+    # initial tests for logistic reg functions
     pt.sigmoid_test(lr.sigmoid)
     pt.compute_cost_test(lr.compute_cost)
     pt.compute_gradient_test(lr.compute_gradient)
-    pt.predict_test(lr.predict)
     pt.compute_cost_reg_test(lr.compute_cost_reg)
     pt.compute_gradient_reg_test(lr.compute_gradient_reg)
+    pt.predict_test(lr.predict)
 
-    w, b, costs = compute_g_descent(ut.load_data())
-    w, b, costs = compute_g_descent_reg(ut.load_data2())
-    # dataN, mu, sigma = getNormalizedData()
-    # testPrice(w, b, mu, sigma)
+    # parameters acquisition and visualization 
+    X_data, y_data = ut.load_data('./data/ex2data1.txt')
+    w, b, _ = compute_logistic_reg_gradient_descent(X_data, y_data)
+    ut.plot_logistic_reg("./results/logistic_reg_fit.png", X_data, y_data, w, b)
 
-    print("\033[0m", end = '')
+    # parameters acquisition and visualization (regularized)
+    X_data, y_data = ut.load_data('./data/ex2data2.txt')
+    data = ut.map_data_features(X_data, y_data) # map features 
+    w, b, _ = compute_logistic_reg_gradient_descent(data[:,:-1], data[:,-1], 1)
+    ut.plot_logistic_reg("./results/logistic_reg_fit_regularized.png", data[:,:-1], data[:,-1], w, b)
 
 if __name__ == '__main__':
     main()
