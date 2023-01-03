@@ -5,7 +5,7 @@ import math
 #########################################################################
 # Cost function
 #
-def compute_cost(x, y, w, b):
+def compute_cost(X, y, w, b):
     """
     Computes the cost function for linear regression.
 
@@ -20,17 +20,17 @@ def compute_cost(x, y, w, b):
     """
 
     # the shape attribute returns the dimensions of the array [x.shape = (n,m)]
-    m = x.shape[0]
+    m = X.shape[0]
 
-    # unoptimized
+    # unoptimized (iterative)
     # cost = 0
     # for i in range(m):
     #     f_wb = w * x[i] + b
-    #     cost_tmp = (f_wb - y[i]) ** 2
-    #     cost += cost_tmp
+    #     cost_i = (f_wb - y[i]) ** 2
+    #     cost += cost_i
 
-    # optimized
-    f_wb = w * x + b
+    # optimized (vectorized)
+    f_wb = w * X + b
     cost = np.sum((f_wb - y) ** 2)
 
     cost /= 2 * m
@@ -40,7 +40,7 @@ def compute_cost(x, y, w, b):
 #########################################################################
 # Gradient function
 #
-def compute_gradient(x, y, w, b):
+def compute_gradient(X, y, w, b):
     """
     Computes the gradient for linear regression
 
@@ -55,9 +55,9 @@ def compute_gradient(x, y, w, b):
     """
 
     # the shape attribute returns the dimensions of the array [x.shape = (n,m)]
-    m = x.shape[0]
+    m = X.shape[0]
 
-    # unoptimized
+    # unoptimized (iterative)
     # dj_dw = 0
     # dj_db = 0
     # for i in range(m):
@@ -68,9 +68,9 @@ def compute_gradient(x, y, w, b):
     #     dj_dw += dj_dw_i
     #     dj_db += dj_db_i
 
-    # optimized
-    f_wb = w * x + b
-    dj_dw = np.sum((f_wb - y) * x)
+    # optimized (vectorized)
+    f_wb = w * X + b
+    dj_dw = np.sum((f_wb - y) * X)
     dj_db = np.sum((f_wb - y))
 
     dj_dw /= m
@@ -81,7 +81,7 @@ def compute_gradient(x, y, w, b):
 #########################################################################
 # Gradient descent
 #
-def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
+def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
     """
     Performs batch gradient descent to learn theta. Updates theta by taking 
     num_iters gradient steps with learning rate alpha
@@ -109,12 +109,12 @@ def gradient_descent(x, y, w_in, b_in, cost_function, gradient_function, alpha, 
     b = copy.deepcopy(b_in)
 
     for _ in range(num_iters):
-        dj_dw, dj_db = gradient_function(x, y, w, b)
+        dj_dw, dj_db = gradient_function(X, y, w, b)
 
         w -= alpha * dj_dw
         b -= alpha * dj_db
 
-        cost = cost_function(x, y, w, b)
+        cost = cost_function(X, y, w, b)
         J_history.append(cost) 
 
     return w, b, J_history

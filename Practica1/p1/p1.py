@@ -1,18 +1,18 @@
+import linear_reg as lr
+
 import public_tests as pt
 import utils as ut
 
-import linear_reg as lr
-
 def compute_linear_reg_gradient_descent(data):
     # initial data and parameters
-    x, y = data[0], data[1]
+    X, y = data[0], data[1]
     w_in = b_in = 0
 
     alpha = 0.01
     num_iters = 1500
 
-    # we obtain the best w and b here
-    w, b, costs = lr.gradient_descent(x, y, w_in, b_in, lr.compute_cost, lr.compute_gradient, alpha, num_iters)
+    # we obtain w and b here
+    w, b, costs = lr.gradient_descent(X, y, w_in, b_in, lr.compute_cost, lr.compute_gradient, alpha, num_iters)
 
     return w, b, costs
 

@@ -25,8 +25,8 @@ def plot_linear_reg_data(data):
 def plot_linear_reg(path, w, b, data):
     plot_linear_reg_data(data)
 
-    x = data[0]
-    plt.plot(x, w * x + b, c='blue')
+    X = data[0]
+    plt.plot(X, w * X + b, c='blue')
 
     plt.savefig(path)
     plt.close('all')

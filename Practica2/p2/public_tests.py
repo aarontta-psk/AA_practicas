@@ -9,7 +9,6 @@ def test_data():
 
     return X_train, y_train, w_init, b_init
 
-
 def compute_cost_test(target):
     X_train, y_train, w_init, b_init = test_data()
     cost = target(X_train, y_train, w_init, b_init)
@@ -18,7 +17,6 @@ def compute_cost_test(target):
 
     print("\033[92mAll tests passed!")
     print("\033[0m", end = '')
-
 
 def compute_gradient_test(target):
     X_train, y_train, w_init, b_init = test_data()
