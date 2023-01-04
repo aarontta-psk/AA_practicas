@@ -1,17 +1,35 @@
-import numpy as np
-import logistic_reg as lgr
+import utils as ut
 
+import numpy as np
+import scipy.optimize as sciopt
+
+# obtain onehot mapping
+def onehot(y_train, n_labels):
+    y_onehot = np.zeros((y_train.shape[0], n_labels))
+    for i in range(y_train.shape[0]):
+        y_onehot[i][y_train[i]] = 1
+    return y_onehot
+
+# obtain random initialized thetas
+def random_thetas(input_labels, hidden_labels, output_labels, epsilon=0.12):
+                             # s[curr_l + 1]  s[curr_l] + 1
+    theta1 = np.random.random((hidden_labels, input_labels + 1)) * (2 * epsilon) - epsilon
+    theta2 = np.random.random((output_labels, hidden_labels + 1)) * (2 * epsilon) - epsilon
+
+    return theta1, theta2
+
+# obtain results from a trained neural network
 def feed_forward(theta1, theta2, X):
     m = X.shape[0]
 
     a1 = np.column_stack([np.ones((m, 1)), X])  # 5000 x 401
     z2 = a1 @ theta1.T                          # 5000 x 401 @ 401 x 25
 
-    a2 = lgr.sigmoid(z2)
+    a2 = ut.sigmoid(z2)
     a2 = np.column_stack([np.ones((m, 1)), a2]) # 5000 x 26
     z3 = a2 @ theta2.T                          # 5000 x 26 @ 26 x 10
 
-    a3 = lgr.sigmoid(z3)                        # 5000 x 10
+    a3 = ut.sigmoid(z3)                         # 5000 x 10
 
     return a3, a2, a1
 
@@ -41,20 +59,17 @@ def cost(theta1, theta2, X, y, lambda_):
 
     Returns
     -------
-    J : float
+    cost : float
         The computed value for the cost function. 
 
     """
     m = X.shape[0]
+
     h0, _, _ = feed_forward(theta1, theta2, X)
 
-    t1 = (y * np.log(h0))
-    t2 = ((1 - y) * np.log(1 - h0))
-
-    cost = t1 + t2
+    cost = np.sum((y * np.log(h0)) + ((1 - y) * np.log(1 - h0)))
     reg_factor = np.sum(pow(theta1[:, 1:], 2)) + np.sum(pow(theta2[:, 1:], 2))
-    J = (-1 / m) * np.sum(cost)
-    J += (lambda_ / (2 * m)) * reg_factor
+    J = (-cost / m) + (lambda_ * reg_factor / (2 * m))
 
     return J
 
@@ -104,7 +119,6 @@ def backprop(theta1, theta2, X, y, lambda_):
 
     grad1 = np.zeros((theta1.shape[0], theta1.shape[1]))
     grad2 = np.zeros((theta2.shape[0], theta2.shape[1]))
-
     for i in range(m):
         a3, a2, a1 = feed_forward(theta1, theta2, X[i, np.newaxis])
 
@@ -117,16 +131,17 @@ def backprop(theta1, theta2, X, y, lambda_):
         grad1 += d2.T @ a1                      # 25 x 1 @ 1 x 401
         grad2 += d3.T @ a2                      # 10 x 1 @ 1 x 26
 
-    grad1[:, 0] = grad1[:, 0] / m
-    grad2[:, 0] = grad2[:, 0] / m
+    grad1[:, 0] /= m
+    grad2[:, 0] /= m
 
     grad1[:, 1:] = (grad1[:, 1:] + lambda_ * theta1[:, 1:]) / m
     grad2[:, 1:] = (grad2[:, 1:] + lambda_ * theta2[:, 1:]) / m
 
-    return (J, grad1, grad2)                    # 25 x 401; 10 x 26 
+    return J, grad1, grad2                      # 25 x 401; 10 x 26 
 
+# unoptimized way to obtain gradient
 def gradient(theta1, theta2, X, y, num_iters, alpha, lambda_=0):
-    for i in range(num_iters):
+    for _ in range(num_iters):
         J, grad1, grad2 = backprop(theta1, theta2, X, y, lambda_)
 
         theta1 -= alpha * grad1
@@ -134,10 +149,22 @@ def gradient(theta1, theta2, X, y, num_iters, alpha, lambda_=0):
 
     return J, theta1, theta2
 
+# function to be called by sciopt.minimize
 def backprop_min(theta, X, y, t1_s, t2_s, lambda_):
+    # reshape to adapt to the minimize function
     theta1 = np.reshape(theta[:t1_s[0] * t1_s[1]], (t1_s[0], t1_s[1]))
     theta2 = np.reshape(theta[t1_s[0] * t1_s[1]:], (t2_s[0], t2_s[1]))
 
+    # train neural network
     J, grad1, grad2 = backprop(theta1, theta2, X, y, lambda_)
 
+    # return results (adapted again to the sciopt.minimize function)
     return J, np.concatenate([np.ravel(grad1), np.ravel(grad2)])
+
+def minimize(x_train, y_onehot, theta1, theta2, num_iters, lambda_):
+    theta = np.concatenate([np.ravel(theta1), np.ravel(theta2)])
+    res = sciopt.minimize(fun=backprop_min, x0=theta, args=(x_train, y_onehot, theta1.shape, theta2.shape, lambda_), method='TNC', jac=True, options={'maxiter': num_iters})
+    theta_1 = np.reshape(res.x[:theta1.shape[0] * theta1.shape[1]], (theta1.shape[0], theta1.shape[1]))
+    theta_2 = np.reshape(res.x[theta1.shape[0] * theta1.shape[1]:], (theta2.shape[0], theta2.shape[1]))
+
+    return theta_1, theta_2

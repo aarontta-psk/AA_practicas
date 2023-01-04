@@ -43,7 +43,7 @@ def main():
     test_neural_network(theta1, theta2, X, y_onehot, lambda_)
 
     # initialize thetas with a random factor
-    epsilon = 0.12           
+    epsilon = 0.12           # s[curr_l + 1]    s[curr_l] + 1    
     theta1 = np.random.random((theta1.shape[0], theta1.shape[1])) * (2 * epsilon) - epsilon
     theta2 = np.random.random((theta2.shape[0], theta2.shape[1])) * (2 * epsilon) - epsilon
 

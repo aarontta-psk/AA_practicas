@@ -1,6 +1,5 @@
-import numpy as np
 import copy
-import math
+import numpy as np
 
 def sigmoid(z):
     """
@@ -14,10 +13,9 @@ def sigmoid(z):
 
     """
 
-    g = 1 / (1 + (np.e ** -z)) # np.ex(-z)
+    g = 1 / (1 + (np.e ** -z)) # np.exp(-z)
 
     return g
-
 
 #########################################################################
 # logistic regression
@@ -33,15 +31,16 @@ def compute_cost(X, y, w, b, lambda_=None):
       lambda_: unused placeholder
 
     Returns:
-      total_cost: (scalar)         cost
+      cost: (scalar)         cost
     """
-    m = y.shape[0]
+
+    m = X.shape[0]
 
     f_wb = sigmoid(X @ w + b)
-    loss = (~y @ np.log(f_wb)) - ((1 - y) @ np.log(1 - f_wb))
-    total_cost = np.sum(loss) / m
+    loss = (-y @ np.log(f_wb)) - ((1 - y) @ np.log(1 - f_wb))
+    cost = np.sum(loss) / m
 
-    return total_cost
+    return cost
 
 
 def compute_gradient(X, y, w, b, lambda_=None):
@@ -59,16 +58,16 @@ def compute_gradient(X, y, w, b, lambda_=None):
       dj_db: (scalar)                The gradient of the cost w.r.t. the parameter b.
       dj_dw: (array_like Shape (n,1)) The gradient of the cost w.r.t. the parameters w.
     """
+
     m = X.shape[0]
 
     dj_dw = X.T @ (sigmoid(X @ w + b) - y)
-    dj_db = (sigmoid(X @ w + b) - y)
+    dj_db = np.sum((sigmoid(X @ w + b) - y))
 
     dj_dw /= m
     dj_db /= m
 
-    return np.sum(dj_db), dj_dw
-
+    return dj_dw, dj_db
 
 #########################################################################
 # regularized logistic regression
@@ -84,16 +83,15 @@ def compute_cost_reg(X, y, w, b, lambda_=1):
       lambda_ : (scalar, float)    Controls amount of regularization
 
     Returns:
-      total_cost: (scalar)         cost 
+      cost: (scalar)         cost 
     """
+
     m = X.shape[0]
 
-    cost = compute_cost(X, y, w, b)
     reg_factor = (lambda_ / (2 * m)) * np.sum(w ** 2)
-    total_cost = cost + reg_factor
+    cost = compute_cost(X, y, w, b) + reg_factor
 
-    return total_cost
-
+    return cost
 
 def compute_gradient_reg(X, y, w, b, lambda_=1):
     """
@@ -109,17 +107,15 @@ def compute_gradient_reg(X, y, w, b, lambda_=1):
     Returns
       dj_db: (scalar)             The gradient of the cost w.r.t. the parameter b. 
       dj_dw: (ndarray Shape (n,)) The gradient of the cost w.r.t. the parameters w. 
-
     """
+
     m = X.shape[0]
 
-    dj_dw = X.T @ (sigmoid(X @ w + b) - y)
-    dj_db = (sigmoid(X @ w + b) - y)
-
-    dj_dw /= m
-    dj_db /= m
-
-    return np.sum(dj_db), dj_dw + (lambda_ * w / m)
+    reg_factor = (lambda_ * w / m)
+    dj_dw, dj_db = compute_gradient(X, y, w, b)
+    dj_dw += reg_factor
+    
+    return dj_dw, dj_db
 
 #########################################################################
 # gradient descent
@@ -148,14 +144,12 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
           primarily for graphing later
     """
 
-    m = len(X[0])
-
     J_history = []
     w = copy.deepcopy(w_in)
-    b = b_in
+    b = copy.deepcopy(b_in)
 
-    for i in range(num_iters):
-        dj_db, dj_dw = gradient_function(X, y, w, b)
+    for _ in range(num_iters):
+        dj_dw, dj_db = gradient_function(X, y, w, b, lambda_)
 
         w -= alpha * dj_dw
         b -= alpha * dj_db
@@ -164,7 +158,6 @@ def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, 
         J_history.append(cost) 
 
     return w, b, J_history
-
 
 #########################################################################
 # predict
@@ -175,16 +168,15 @@ def predict(X, w, b):
     regression parameters w and b
 
     Args:
-    X : (ndarray Shape (m, n))
-    w : (array_like Shape (n,))      Parameters of the model
-    b : (scalar, float)              Parameter of the model
+      X : (ndarray Shape (m, n))
+      w : (array_like Shape (n,))      Parameters of the model
+      b : (scalar, float)              Parameter of the model
 
     Returns:
-    p: (ndarray (m,1))
-        The predictions for X using a threshold at 0.5
+      predict: (ndarray (m,1))         The predictions for X using a threshold at 0.5
     """
 
     f_wb = sigmoid(X @ w + b)
-    p = np.round(f_wb)
+    predict = np.round(f_wb)    # 0 or 1 values
 
-    return p
+    return predict
