@@ -10,7 +10,7 @@ def obtain_data(data_path):
     else:
         return data['X'], data['y']
 
-def plot_svm(res_path, X, y, svm):
+def plot_svm(res_path, title, X, y, svm):
     x1 = np.linspace(X[:, 0].min(), X[:, 0].max(), 100)
     x2 = np.linspace(X[:, 1].min(), X[:, 1].max(), 100)
 
@@ -18,6 +18,7 @@ def plot_svm(res_path, X, y, svm):
     y_predict = svm.predict(np.array([x1.ravel(), x2.ravel()]).T).reshape(x1.shape)
 
     plt.figure()
+    plt.title(title)
 
     plt.scatter(X[(y==1).ravel(), 0], X[(y==1).ravel(), 1], color='blue', marker='+')
     plt.scatter(X[(y==0).ravel(), 0], X[(y==0).ravel(), 1], color='red', marker='o')

@@ -62,8 +62,6 @@ def test_hiper_parameters(X, y, x_ideal, y_ideal):
             error_data[temp_lambda, temp_degree], _, _ = calc_error(poly, scalar, model, x_cv, y_cv)
 
     min = np.argmin(error_data)
-    # print("Min index:", min)
-
     lambda_id = int(min/len(lambdas))
     proper_lambda = lambdas[lambda_id]
     proper_degree = min - (len(lambdas) * lambda_id) + 1 
@@ -71,15 +69,15 @@ def test_hiper_parameters(X, y, x_ideal, y_ideal):
     print("--HIPER PARAMETERS TEST--")
     print("Proper degree:", proper_degree)
     print("Proper lambda:", proper_lambda)
-    print("Error degree&lambda:", error_data)
 
     poly, scalar, model = train(x_train, y_train, proper_degree, proper_lambda)
 
     error, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
+
     print("Error test:", error)
     print()
 
-    ut.plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './results/test_hiper_parameters.png')
+    ut.plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './results/test_hiper_parameters.png', "Test hiper-parameters")
 
 # lambda test
 def test_lambda(X, y, x_ideal, y_ideal):
@@ -94,18 +92,19 @@ def test_lambda(X, y, x_ideal, y_ideal):
 
         error_data[temp_lambda], _, _ = calc_error(poly, scalar, model, x_cv, y_cv)
 
-    proper_lambda = lambdas[np.argmin(error_data)] # MASSIVE PROBLEM, COLOSSAL EVEN
+    proper_lambda = lambdas[np.argmin(error_data)]
     
     print("--LAMBDA TEST--")
     print("Proper lambda:", proper_lambda)
-    print("Error lambda:", error_data)
-    print()
 
     poly, scalar, model = train(x_train, y_train, degree, proper_lambda)
 
-    _, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
+    error_test, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
 
-    ut.plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './results/test_lambda.png')
+    print("Error lambda:", error_test)
+    print()
+    
+    ut.plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './results/test_lambda.png', "Test lambda")
 
 # degree test
 def test_degree(X, y, x_ideal, y_ideal):
@@ -122,17 +121,18 @@ def test_degree(X, y, x_ideal, y_ideal):
 
     print("--DEGREE TEST--")
     print("Proper degree:", proper_degree)
-    print("Error degree:", error_data)
-    print()
 
     poly, scalar, model = train(x_train, y_train, proper_degree)
 
-    _, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
+    error_test, _, y_predict = calc_error(poly, scalar, model, x_test, y_test)
+    
+    print("Error degree:", error_test)
+    print()
 
-    ut.plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './results/test_degree.png')
+    ut.plot_train(X, y, x_ideal, y_ideal, x_test, y_predict, './results/test_degree.png', "Test degree")
 
 # first test
-def test_start(X, y, x_ideal, y_ideal):
+def test_overadjustment(X, y, x_ideal, y_ideal):
     x_train, x_test, y_train, y_test = skms.train_test_split(X, y, test_size=0.33, random_state=1)
 
     poly, scalar, model = train(x_train, y_train)
@@ -140,18 +140,18 @@ def test_start(X, y, x_ideal, y_ideal):
     error_train, _, y_train_predict = calc_error(poly, scalar, model , x_train, y_train)
     error_test, _, _ = calc_error(poly, scalar, model, x_test, y_test)
 
-    print("--START TEST--")
+    print("--OVERADJUSTMENT TEST--")
     print("Error train:", error_train)
     print("Error test:", error_test)
     print()
 
-    ut.plot_train(X, y, x_ideal, y_ideal, x_train, y_train_predict, './results/test_start.png')
+    ut.plot_train(X, y, x_ideal, y_ideal, x_train, y_train_predict, './results/test_overadjustment.png', "Test overadjustment")
 
 def main():
     X, y, x_ideal, y_ideal = ut.gen_data(64)
     X = X[:, None]
 
-    test_start(X, y, x_ideal, y_ideal)
+    test_overadjustment(X, y, x_ideal, y_ideal)
     test_degree(X, y, x_ideal, y_ideal)
     test_lambda(X, y, x_ideal, y_ideal)
 

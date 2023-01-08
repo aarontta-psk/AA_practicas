@@ -12,7 +12,7 @@ def test_parameters(w, b, mu, sigma):
 
     # should be around $318709
     price = (np.dot(w, norm_features) + b) * 1000
-    print("Price for a house with 1200 sqft, 3 bedrooms, 1 foor, 40 years old: ${}".format(price))
+    print("Price for a house with 1200 sqft, 3 bedrooms, 1 floor, 40 years old: ${}".format(price))
 
 def compute_multi_linear_reg_descent(data):
     # initial data and parameters

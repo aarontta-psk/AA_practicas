@@ -31,13 +31,13 @@ def main():
     # parameters acquisition and visualization 
     X_data, y_data = ut.load_data('./data/ex2data1.txt')
     w, b, _ = compute_logistic_reg_gradient_descent(X_data, y_data)
-    ut.plot_logistic_reg("./results/logistic_reg_fit.png", X_data, y_data, w, b)
+    ut.plot_logistic_reg("./results/logistic_reg_fit.png", "Linear fit logistic_reg", X_data, y_data, w, b)
 
     # parameters acquisition and visualization (regularized)
     X_data, y_data = ut.load_data('./data/ex2data2.txt')
     data = ut.map_data_features(X_data, y_data) # map features 
     w, b, _ = compute_logistic_reg_gradient_descent(data[:,:-1], data[:,-1], 0.1)
-    ut.plot_logistic_reg("./results/logistic_reg_fit_regularized.png", data[:,:-1], data[:,-1], w, b)
+    ut.plot_logistic_reg("./results/logistic_reg_fit_regularized.png", "Non-linear regularized logistic_reg decision boundary", data[:,:-1], data[:,-1], w, b)
 
 if __name__ == '__main__':
     main()

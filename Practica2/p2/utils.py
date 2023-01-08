@@ -34,10 +34,10 @@ def plot_multi_linear_reg_data(X_train, y_train):
 def plot_multi_linear_reg(path, w, b, X_data, y_data, norm_data):
     ax = plot_multi_linear_reg_data(X_data, y_data)
     
-    # TODO
-    # for i in range(len(ax)):
-    #     ax[i].plot(norm_data[:, i], w[i] * norm_data[:, i] + b, c='red')
-    #     # ax[i].scatter(X_train[:, i], y_train)
+    y_predict = (norm_data[:,:-1] @ w) + b
+
+    for i in range(len(ax)):
+        ax[i].scatter(X_data[:, i], y_predict, c='orange')
 
     plt.savefig(path)
     plt.close('all')

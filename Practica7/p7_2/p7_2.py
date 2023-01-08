@@ -114,7 +114,7 @@ def main(training_sys):
 
     if training_sys == 'svm':       # SVM accuracy: 98.03
         check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
-    elif training_sys == 'nn':      # Neural network accuracy: 96.97
+    elif training_sys == 'nn':      # Neural network accuracy: 97.58
         check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
     elif training_sys == 'log':     # Logistic regression accuracy: 97.42
         check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
@@ -124,4 +124,4 @@ def main(training_sys):
         check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
 
 if __name__ == '__main__':
-    main('log')
+    main('nn')

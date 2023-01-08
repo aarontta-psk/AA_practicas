@@ -135,6 +135,7 @@ def checkNNGradients(costNN, reg_param=0):
 
     print('If your backpropagation implementation is correct, then the relative difference will be small (less than 1e-9). \n'
           'Relative Difference: %g' % diff)
+    print()
 
 def predict(theta1, theta2, X):
     """

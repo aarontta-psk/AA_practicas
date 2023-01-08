@@ -58,9 +58,10 @@ def plot_decision_boundary(w, b, X, y):
         # Plot z = 0
         plt.contour(u, v, z, levels=[0.5], colors="g")
 
-def plot_logistic_reg(path, X_train, y_train, w, b):
+def plot_logistic_reg(path, title, X_train, y_train, w, b):
     plt.figure()
 
+    plt.title(title)
     plot_decision_boundary(w, b, X_train, y_train)
 
     plt.savefig(path)
