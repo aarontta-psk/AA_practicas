@@ -29,7 +29,7 @@ def obtain_svm(x_train, y_train, x_val, y_val):
     c, sigma, svm_ = svm_list[best_accuracy]
     
     print("---------SVM validation finish---------")
-    print("SVM best parameters: C --> " + str(c) + "; Sigma --> " + str(sigma))
+    print("\nSVM best parameters: C --> " + str(c) + "; Sigma --> " + str(sigma) + "\n")
 
     return svm_
 
@@ -86,7 +86,7 @@ def obtain_neural_network(x_train, y_train, x_val, y_val):
          
         theta_1, theta_2 = nn.minimize(x_train, y_onehot, theta1, theta2, num_iters, lambda_value)
         
-        predict = ut.predict(theta_1, theta_2, x_val)
+        predict = nn.predict(theta_1, theta_2, x_val)
         accuracy = np.sum(y_val == predict) / y_val.shape[0]
 
         accuracies.append(accuracy)
@@ -97,43 +97,43 @@ def obtain_neural_network(x_train, y_train, x_val, y_val):
     lambda_, theta1, theta2 = nn_list[best_accuracy]
 
     print("---------Neural network validation finish---------")
-    print("Neural network best parameters: Lambda --> " + str(lambda_))
+    print("\nNeural network best parameters: Lambda --> " + str(lambda_) + "\n")
 
     return theta1, theta2
 
 def check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test):
     tic = time.process_time()
     svm = obtain_svm(x_train, y_train, x_val, y_val)
-    accuracy = skme.accuracy_score(y_test, svm.predict(x_test))
+    accuracy = skme.accuracy_score(y_test, svm.predict(x_test)) * 100
     toc = time.process_time()
     process_time = toc - tic
 
-    print("SVM accuracy: " + str(round(accuracy * 100, 2)) + "%%")
-    print("SVM process time: " + str(round(process_time, 2)) + " seconds")
+    print("SVM accuracy: " + str(round(accuracy, 2)) + "%%")
+    print("SVM process time: " + str(round(process_time, 2)) + " seconds\n")
     return accuracy, process_time
 
 def check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test):
     tic = time.process_time()
     w, b = obtain_reg_log(x_train, y_train, x_val, y_val)
     predict = lgr.predict(x_test, w, b)
-    accuracy = np.sum(y_test == predict) / y_test.shape[0]
+    accuracy = np.sum(y_test == predict) / y_test.shape[0] * 100
     toc = time.process_time()
     process_time = toc - tic
 
-    print("Logistic regression accuracy: " + str(round(accuracy * 100, 2)) + "%%")
-    print("Logistic regression process time: " + str(round(process_time, 2)) + " seconds")
+    print("Logistic regression accuracy: " + str(round(accuracy, 2)) + "%%")
+    print("Logistic regression process time: " + str(round(process_time, 2)) + " seconds\n")
     return accuracy, process_time
     
 def check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test):
     tic = time.process_time()
     theta1, theta2 = obtain_neural_network(x_train, y_train, x_val, y_val)
-    p = ut.predict(theta1, theta2, x_test)
-    accuracy = np.sum(y_test == p) / y_test.shape[0]
+    p = nn.predict(theta1, theta2, x_test)
+    accuracy = np.sum(y_test == p) / y_test.shape[0] * 100
     toc = time.process_time()
     process_time = toc - tic
     
-    print("Neural network accuracy: " + str(round(accuracy * 100, 2)) + "%%")
-    print("Neural network process time: " + str(round(process_time, 2)) + " seconds")
+    print("Neural network accuracy: " + str(round(accuracy, 2)) + "%%")
+    print("Neural network process time: " + str(round(process_time, 2)) + " seconds\n")
     return accuracy, process_time
 
 def main(training_sys):

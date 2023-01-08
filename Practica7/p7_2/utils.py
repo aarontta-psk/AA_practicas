@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 # import sys
 
+# given functions
 def preProcess(email):
     hdrstart = email.find("\n\n")
     if hdrstart != -1:
@@ -69,45 +70,9 @@ def getVocabDict(reverse=False):
 
     return vocab_dict
 
+# our methods
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
-
-def predict(theta1, theta2, X):
-    """
-    Predict the label of an input given a trained neural network.
-
-    Parameters
-    ----------
-    theta1 : array_like
-        Weights for the first layer in the neural network.
-        It has shape (2nd hidden layer size x input size)
-
-    theta2: array_like
-        Weights for the second layer in the neural network. 
-        It has shape (output layer size x 2nd hidden layer size)
-
-    X : array_like
-        The image inputs having shape (number of examples x image dimensions).
-
-    Return 
-    ------
-    predict : array_like
-        Predictions vector containing the predicted label for each example.
-        It has a length equal to the number of examples.
-    """
-
-    m = X.shape[0]
-    a1 = np.column_stack([np.ones((m, 1)), X])
-    z2 = a1 @ theta1.T
-
-    a2 = sigmoid(z2)
-    a2 = np.column_stack([np.ones((m, 1)), a2])
-    z3 = a2 @ theta2.T
-
-    a3 = sigmoid(z3)
-    predict = np.argmax(a3, axis=1)
-
-    return predict
 
 def obtainAllDirectoryFiles(dir):
     return [os.path.join(dir, dir_file) for dir_file in os.listdir(dir) if os.path.isfile(os.path.join(dir, dir_file))]
@@ -155,8 +120,6 @@ def preprocess_data():
 def plot_results(log_acc, log_time, nn_acc, nn_time, svm_acc, svm_time):
     plot_beginning = 80
 
-    print('hi')
-
     X_plot = ['Logistic Regresion', 'Neural Networks', 'SVM']
     y_plot = [log_acc - plot_beginning, nn_acc - plot_beginning, svm_acc - plot_beginning]
     y_plot_time = [log_time, nn_time, svm_time]
@@ -167,7 +130,7 @@ def plot_results(log_acc, log_time, nn_acc, nn_time, svm_acc, svm_time):
     plt.xlabel("Training system")
     plt.ylabel("Success rate")
 
-    plt.bar(X_axis, y_plot, 0.4, label = 'Success rate', bottom=plot_beginning)
+    plt.bar(X_axis, y_plot, 0.4, label = 'Success rate', bottom=plot_beginning, color=(0.1, 0.3, 0.9, 1))
     plt.xticks(X_axis, X_plot)
 
     plt.legend()
@@ -176,9 +139,9 @@ def plot_results(log_acc, log_time, nn_acc, nn_time, svm_acc, svm_time):
 
     plt.title("Time spent training with each training system")
     plt.xlabel("Training system")
-    plt.ylabel("Time training")
+    plt.ylabel("Training time (in seconds)")
 
-    plt.bar(X_axis, y_plot_time, 0.4, label = 'Time training')
+    plt.bar(X_axis, y_plot_time, 0.4, label = 'Time training', color=(0.8, 0.2, 0.3, 1))
     plt.xticks(X_axis, X_plot)
     
     plt.legend()

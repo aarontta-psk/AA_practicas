@@ -139,6 +139,43 @@ def backprop(theta1, theta2, X, y, lambda_):
 
     return J, grad1, grad2                      # 25 x 401; 10 x 26 
 
+def predict(theta1, theta2, X):
+    """
+    Predict the label of an input given a trained neural network.
+
+    Parameters
+    ----------
+    theta1 : array_like
+        Weights for the first layer in the neural network.
+        It has shape (2nd hidden layer size x input size)
+
+    theta2: array_like
+        Weights for the second layer in the neural network. 
+        It has shape (output layer size x 2nd hidden layer size)
+
+    X : array_like
+        The image inputs having shape (number of examples x image dimensions).
+
+    Return 
+    ------
+    predict : array_like
+        Predictions vector containing the predicted label for each example.
+        It has a length equal to the number of examples.
+    """
+
+    m = X.shape[0]
+    a1 = np.column_stack([np.ones((m, 1)), X])
+    z2 = a1 @ theta1.T
+
+    a2 = ut.sigmoid(z2)
+    a2 = np.column_stack([np.ones((m, 1)), a2])
+    z3 = a2 @ theta2.T
+
+    a3 = ut.sigmoid(z3)
+    predict = np.argmax(a3, axis=1)
+
+    return predict
+
 # unoptimized way to obtain gradient
 def gradient(theta1, theta2, X, y, num_iters, alpha, lambda_=0):
     for _ in range(num_iters):
