@@ -4,6 +4,7 @@ import nn as nn
 
 import utils as ut
 
+import time
 import numpy as np
 import sklearn.metrics as skme
 
@@ -12,17 +13,22 @@ def obtain_svm(x_train, y_train, x_val, y_val):
     values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
     
     # check for best parameters
-    svm_ = None
-    c = sigma = 0
-    best_acc = -1 
-    for temp_c in values:
-        for temp_sigma in values:
-            new_svm, _, accuracy = svm.svm(x_train, y_train, x_val, y_val, 'rbf', temp_c, temp_sigma)
+    print("---------SVM validation begin---------")
+    iteration = 0
+    accuracies, svm_list = [], []
+    for c_value in values:
+        for sigma_value in values:
+            print("SVM validation " + str(round(iteration/(len(values)**2) * 100, 2)) + "%% out of 100%% done")
+            new_svm, _, accuracy = svm.svm(x_train, y_train, x_val, y_val, 'rbf', c_value, sigma_value)
             
-            if best_acc < accuracy:
-                best_acc = accuracy
-                svm_, c, sigma = new_svm, temp_c, temp_sigma
+            accuracies.append(accuracy)
+            svm_list.append((c_value, sigma_value, new_svm))
+            iteration += 1
+
+    best_accuracy = np.argmax(accuracies)
+    c, sigma, svm_ = svm_list[best_accuracy]
     
+    print("---------SVM validation finish---------")
     print("SVM best parameters: C --> " + str(c) + "; Sigma --> " + str(sigma))
 
     return svm_
@@ -31,27 +37,30 @@ def obtain_reg_log(x_train, y_train, x_val, y_val):
     # initial values
     values = np.array([1e-6, 1e-5, 1e-4, 0.001, 0.01, 0.1, 1, 10, 50, 100, 500])
     w_in, b_in = np.zeros(x_train.shape[1]), 1
-    num_iters = 1000
+    num_iters = 2000
     alpha = 0.01
 
     # check for best parameters
-    lambda_ = 0
-    best_acc = -1 
-    for temp_lambda in values:
-        new_w, new_b, _ = lgr.gradient_descent(x_train, y_train, w_in, b_in, lgr.compute_cost_reg, lgr.compute_gradient_reg, alpha, num_iters, temp_lambda)
+    print("---------Logistic regression validation begin---------")
+    iteration = 0
+    accuracies, lambda_list = [], []
+    for lambda_value in values:
+        print("Logistic regression validation " + str(round(iteration/len(values) * 100, 2)) + "%% out of 100%% done")
+
+        new_w, new_b, _ = lgr.gradient_descent(x_train, y_train, w_in, b_in, lgr.compute_cost_reg, lgr.compute_gradient_reg, alpha, num_iters, lambda_value)
 
         predict = lgr.predict(x_val, new_w, new_b)
         accuracy = np.sum(y_val == predict) / y_val.shape[0]
 
-        if best_acc < accuracy:
-            best_acc = accuracy
-            lambda_ = temp_lambda
+        accuracies.append(accuracy)
+        lambda_list.append((lambda_value, new_w, new_b))
+        iteration += 1
 
-    print("Logistic regression best parameters: Lambda --> " + str(lambda_))
+    best_accuracy = np.argmax(accuracies)
+    lambda_, w, b = lambda_list[best_accuracy]
 
-    # redo best regression with more iterations
-    num_iters = 10000
-    w, b, _ = lgr.gradient_descent(x_train, y_train, w_in, b_in, lgr.compute_cost_reg, lgr.compute_gradient_reg, alpha, num_iters, lambda_)
+    print("---------Logistic regression validation finish---------")
+    print("\nLogistic regression best parameters: Lambda --> " + str(lambda_) + "\n")
     
     return w, b
 
@@ -66,51 +75,70 @@ def obtain_neural_network(x_train, y_train, x_val, y_val):
 
     theta1, theta2 = nn.random_thetas(input_labels, hidden_labels, output_labels)
     y_onehot = nn.onehot(y_train, output_labels)
-    num_iters = 100
+    num_iters = 200
 
     # check for best parameters
-    lambda_ = 0
-    best_acc = -1 
-    for temp_lambda in values:
-        theta_1, theta_2 = nn.minimize(x_train, y_onehot, theta1, theta2, num_iters, temp_lambda)
+    print("---------Neural network validation begin---------")
+    iteration = 0
+    accuracies, nn_list = [], []
+    for lambda_value in values:
+        print("Neural network validation " + str(round(iteration/len(values) * 100, 2)) + "%% out of 100%% done")
+         
+        theta_1, theta_2 = nn.minimize(x_train, y_onehot, theta1, theta2, num_iters, lambda_value)
         
         predict = ut.predict(theta_1, theta_2, x_val)
         accuracy = np.sum(y_val == predict) / y_val.shape[0]
 
-        print('Lambda:', temp_lambda)
+        accuracies.append(accuracy)
+        nn_list.append((lambda_value, theta_1, theta_2))    
+        iteration += 1
 
-        if best_acc < accuracy:
-            best_acc = accuracy
-            lambda_ = temp_lambda
+    best_accuracy = np.argmax(accuracies)
+    lambda_, theta1, theta2 = nn_list[best_accuracy]
 
+    print("---------Neural network validation finish---------")
     print("Neural network best parameters: Lambda --> " + str(lambda_))
-
-    # redo best neural network with more iterations
-    num_iters = 1000
-    theta1, theta2 = nn.minimize(x_train, y_onehot, theta1, theta2, num_iters, lambda_)
 
     return theta1, theta2
 
 def check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test):
+    tic = time.process_time()
     svm = obtain_svm(x_train, y_train, x_val, y_val)
     accuracy = skme.accuracy_score(y_test, svm.predict(x_test))
-    print("SVM accuracy:", round(accuracy * 100, 2))
+    toc = time.process_time()
+    process_time = toc - tic
+
+    print("SVM accuracy: " + str(round(accuracy * 100, 2)) + "%%")
+    print("SVM process time: " + str(round(process_time, 2)) + " seconds")
+    return accuracy, process_time
 
 def check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test):
+    tic = time.process_time()
     w, b = obtain_reg_log(x_train, y_train, x_val, y_val)
     predict = lgr.predict(x_test, w, b)
     accuracy = np.sum(y_test == predict) / y_test.shape[0]
-    print("Logistic regression accuracy:", round(accuracy * 100, 2))
+    toc = time.process_time()
+    process_time = toc - tic
+
+    print("Logistic regression accuracy: " + str(round(accuracy * 100, 2)) + "%%")
+    print("Logistic regression process time: " + str(round(process_time, 2)) + " seconds")
+    return accuracy, process_time
     
 def check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test):
+    tic = time.process_time()
     theta1, theta2 = obtain_neural_network(x_train, y_train, x_val, y_val)
     p = ut.predict(theta1, theta2, x_test)
     accuracy = np.sum(y_test == p) / y_test.shape[0]
-    print("Neural network accuracy:", round(accuracy * 100, 2))
+    toc = time.process_time()
+    process_time = toc - tic
+    
+    print("Neural network accuracy: " + str(round(accuracy * 100, 2)) + "%%")
+    print("Neural network process time: " + str(round(process_time, 2)) + " seconds")
+    return accuracy, process_time
 
 def main(training_sys):
     x_train, y_train, x_val, y_val, x_test, y_test = ut.preprocess_data()
-    print("Preload finished.")
+    print("~~~~~~Preload finished~~~~~~\n")
 
     if training_sys == 'svm':       # SVM accuracy: 98.03
         check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
@@ -119,9 +147,11 @@ def main(training_sys):
     elif training_sys == 'log':     # Logistic regression accuracy: 97.42
         check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
     elif training_sys == 'all':
-        check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
-        check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
-        check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
+        log_acc, log_time = check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
+        nn_acc, nn_time = check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
+        svm_acc, svm_time = check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
+
+        ut.plot_results(log_acc, log_time, nn_acc, nn_time, svm_acc, svm_time)
 
 if __name__ == '__main__':
-    main('nn')
+    main('all')

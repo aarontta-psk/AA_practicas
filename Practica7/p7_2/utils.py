@@ -5,6 +5,8 @@ import nltk.stem.porter
 import os 
 import numpy as np
 import sklearn.model_selection as skm
+import matplotlib.pyplot as plt
+
 # import sys
 
 def preProcess(email):
@@ -149,3 +151,36 @@ def preprocess_data():
     x_val, y_val = np.vstack((eh_x_val, hh_x_val, s_x_val)), np.hstack((eh_y_val, hh_y_val, s_y_val))
 
     return x_train, y_train, x_val, y_val, x_test, y_test
+
+def plot_results(log_acc, log_time, nn_acc, nn_time, svm_acc, svm_time):
+    plot_beginning = 80
+
+    print('hi')
+
+    X_plot = ['Logistic Regresion', 'Neural Networks', 'SVM']
+    y_plot = [log_acc - plot_beginning, nn_acc - plot_beginning, svm_acc - plot_beginning]
+    y_plot_time = [log_time, nn_time, svm_time]
+
+    X_axis = np.arange(len(X_plot))
+
+    plt.title("Success rate of each training system")
+    plt.xlabel("Training system")
+    plt.ylabel("Success rate")
+
+    plt.bar(X_axis, y_plot, 0.4, label = 'Success rate', bottom=plot_beginning)
+    plt.xticks(X_axis, X_plot)
+
+    plt.legend()
+    plt.savefig('./results/success_graph.png')
+    plt.close('all')
+
+    plt.title("Time spent training with each training system")
+    plt.xlabel("Training system")
+    plt.ylabel("Time training")
+
+    plt.bar(X_axis, y_plot_time, 0.4, label = 'Time training')
+    plt.xticks(X_axis, X_plot)
+    
+    plt.legend()
+    plt.savefig('./results/time_graph.png')
+    plt.close('all')
