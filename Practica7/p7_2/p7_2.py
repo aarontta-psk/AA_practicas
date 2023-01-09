@@ -8,31 +8,6 @@ import time
 import numpy as np
 import sklearn.metrics as skme
 
-def obtain_svm(x_train, y_train, x_val, y_val):
-    # initial values
-    values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
-    
-    # check for best parameters
-    print("---------SVM validation begin---------")
-    iteration = 0
-    accuracies, svm_list = [], []
-    for c_value in values:
-        for sigma_value in values:
-            print("SVM validation " + str(round(iteration/(len(values)**2) * 100, 2)) + "%% out of 100%% done")
-            new_svm, _, accuracy = svm.svm(x_train, y_train, x_val, y_val, 'rbf', c_value, sigma_value)
-            
-            accuracies.append(accuracy)
-            svm_list.append((c_value, sigma_value, new_svm))
-            iteration += 1
-
-    best_accuracy = np.argmax(accuracies)
-    c, sigma, svm_ = svm_list[best_accuracy]
-    
-    print("---------SVM validation finish---------")
-    print("\nSVM best parameters: C --> " + str(c) + "; Sigma --> " + str(sigma) + "\n")
-
-    return svm_
-
 def obtain_reg_log(x_train, y_train, x_val, y_val):
     # initial values
     values = np.array([1e-6, 1e-5, 1e-4, 0.001, 0.01, 0.1, 1, 10, 50, 100, 500])
@@ -101,16 +76,30 @@ def obtain_neural_network(x_train, y_train, x_val, y_val):
 
     return theta1, theta2
 
-def check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test):
-    tic = time.process_time()
-    svm = obtain_svm(x_train, y_train, x_val, y_val)
-    accuracy = skme.accuracy_score(y_test, svm.predict(x_test)) * 100
-    toc = time.process_time()
-    process_time = toc - tic
+def obtain_svm(x_train, y_train, x_val, y_val):
+    # initial values
+    values = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+    
+    # check for best parameters
+    print("---------SVM validation begin---------")
+    iteration = 0
+    accuracies, svm_list = [], []
+    for c_value in values:
+        for sigma_value in values:
+            print("SVM validation " + str(round(iteration/(len(values)**2) * 100, 2)) + "%% out of 100%% done")
+            new_svm, _, accuracy = svm.svm(x_train, y_train, x_val, y_val, 'rbf', c_value, sigma_value)
+            
+            accuracies.append(accuracy)
+            svm_list.append((c_value, sigma_value, new_svm))
+            iteration += 1
 
-    print("SVM accuracy: " + str(round(accuracy, 2)) + "%%")
-    print("SVM process time: " + str(round(process_time, 2)) + " seconds\n")
-    return accuracy, process_time
+    best_accuracy = np.argmax(accuracies)
+    c, sigma, svm_ = svm_list[best_accuracy]
+    
+    print("---------SVM validation finish---------")
+    print("\nSVM best parameters: C --> " + str(c) + "; Sigma --> " + str(sigma) + "\n")
+
+    return svm_
 
 def check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test):
     tic = time.process_time()
@@ -136,21 +125,34 @@ def check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test):
     print("Neural network process time: " + str(round(process_time, 2)) + " seconds\n")
     return accuracy, process_time
 
+def check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test):
+    tic = time.process_time()
+    svm = obtain_svm(x_train, y_train, x_val, y_val)
+    accuracy = skme.accuracy_score(y_test, svm.predict(x_test)) * 100
+    toc = time.process_time()
+    process_time = toc - tic
+
+    print("SVM accuracy: " + str(round(accuracy, 2)) + "%%")
+    print("SVM process time: " + str(round(process_time, 2)) + " seconds\n")
+    return accuracy, process_time
+
 def main(training_sys):
     x_train, y_train, x_val, y_val, x_test, y_test = ut.preprocess_data()
     print("~~~~~~Preload finished~~~~~~\n")
 
-    if training_sys == 'svm':       # SVM accuracy: 98.03
-        check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
-    elif training_sys == 'nn':      # Neural network accuracy: 97.58
-        check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
-    elif training_sys == 'log':     # Logistic regression accuracy: 97.42
+    if training_sys == 'log':       # Logistic regression accuracy: 96.52
         check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
+    elif training_sys == 'nn':      # Neural network accuracy: 97.12
+        check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
+    elif training_sys == 'svm':      # SVM accuracy: 98.03
+        check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
     elif training_sys == 'all':
+        # check every training system
         log_acc, log_time = check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test)
         nn_acc, nn_time = check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test)
         svm_acc, svm_time = check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test)
 
+        # plot results obtained
         ut.plot_results(log_acc, log_time, nn_acc, nn_time, svm_acc, svm_time)
 
 if __name__ == '__main__':
