@@ -117,19 +117,19 @@ def backprop(theta1, theta2, X, y, lambda_):
 
     J = cost(theta1, theta2, X, y, lambda_)
 
-    grad1 = np.zeros((theta1.shape[0], theta1.shape[1]))
-    grad2 = np.zeros((theta2.shape[0], theta2.shape[1]))
+    grad1 = np.zeros(theta1.shape)
+    grad2 = np.zeros(theta2.shape)
+    a3, a2, a1 = feed_forward(theta1, theta2, X)
+    
+    for i in range(m):    
+        d3 = (a3[i] - y[i])[np.newaxis]            # 1 x 10
 
-    for i in range(m):
-        a3, a2, a1 = feed_forward(theta1, theta2, X[i, np.newaxis])
-        d3 = a3 - y[i]                          # 1 x 10
+        gZ = (a2[i] * (1 - a2[i]))                 # 1 x 26
+        d2 = (d3 @ theta2 * gZ)                    # 1 x 10 @ 10 x 26 * 1 x 26
+        d2 = d2[:, 1:]                             # 1 x 25
 
-        gZ = (a2 * (1 - a2))                    # 1 x 26
-        d2 = d3 @ theta2 * gZ                   # 1 x 10 @ 10 x 26 * 1 x 26
-        d2 = d2[:, 1:]                          # 1 x 25
-
-        grad1 += d2.T @ a1                      # 25 x 1 @ 1 x 401
-        grad2 += d3.T @ a2                      # 10 x 1 @ 1 x 26
+        grad1 += d2.T @ a1[i, np.newaxis]          # 25 x 1 @ 1 x 401
+        grad2 += d3.T @ a2[i, np.newaxis]          # 10 x 1 @ 1 x 26
 
     grad1[:, 0] /= m
     grad2[:, 0] /= m
@@ -137,7 +137,7 @@ def backprop(theta1, theta2, X, y, lambda_):
     grad1[:, 1:] = (grad1[:, 1:] + lambda_ * theta1[:, 1:]) / m
     grad2[:, 1:] = (grad2[:, 1:] + lambda_ * theta2[:, 1:]) / m
 
-    return J, grad1, grad2                      # 25 x 401; 10 x 26 
+    return J, grad1, grad2                         # 25 x 401; 10 x 26 
 
 def predict(theta1, theta2, X):
     """
