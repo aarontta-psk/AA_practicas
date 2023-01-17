@@ -1,0 +1,5 @@
+Como se miró en la tutoría del martes 17 de enero, de cara al examen, por los problemas de eficiencia, hemos modificado:
+    - Numero iteraciones NN: 50
+    - Tiempo se calcula ahora con time.perf_counter()
+    - nn.backprop() modificado para hacer un solo feed_forward fuera del bucle
+    - Ajustada memoria a nuevos resultados
