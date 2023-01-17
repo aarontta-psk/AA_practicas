@@ -50,7 +50,7 @@ def obtain_neural_network(x_train, y_train, x_val, y_val):
 
     theta1, theta2 = nn.random_thetas(input_labels, hidden_labels, output_labels)
     y_onehot = nn.onehot(y_train, output_labels)
-    num_iters = 200
+    num_iters = 50
 
     # check for best parameters
     print("---------Neural network validation begin---------")
@@ -102,11 +102,11 @@ def obtain_svm(x_train, y_train, x_val, y_val):
     return svm_
 
 def check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test):
-    tic = time.process_time()
+    tic = time.perf_counter()
     w, b = obtain_reg_log(x_train, y_train, x_val, y_val)
     predict = lgr.predict(x_test, w, b)
     accuracy = np.sum(y_test == predict) / y_test.shape[0] * 100
-    toc = time.process_time()
+    toc = time.perf_counter()
     process_time = toc - tic
 
     print("Logistic regression accuracy: " + str(round(accuracy, 2)) + "%%")
@@ -114,11 +114,11 @@ def check_spam_reg_log(x_train, y_train, x_val, y_val, x_test, y_test):
     return accuracy, process_time
     
 def check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test):
-    tic = time.process_time()
+    tic = time.perf_counter()
     theta1, theta2 = obtain_neural_network(x_train, y_train, x_val, y_val)
     p = nn.predict(theta1, theta2, x_test)
     accuracy = np.sum(y_test == p) / y_test.shape[0] * 100
-    toc = time.process_time()
+    toc = time.perf_counter()
     process_time = toc - tic
     
     print("Neural network accuracy: " + str(round(accuracy, 2)) + "%%")
@@ -126,10 +126,10 @@ def check_spam_neural_network(x_train, y_train, x_val, y_val, x_test, y_test):
     return accuracy, process_time
 
 def check_spam_svm(x_train, y_train, x_val, y_val, x_test, y_test):
-    tic = time.process_time()
+    tic = time.perf_counter()
     svm = obtain_svm(x_train, y_train, x_val, y_val)
     accuracy = skme.accuracy_score(y_test, svm.predict(x_test)) * 100
-    toc = time.process_time()
+    toc = time.perf_counter()
     process_time = toc - tic
 
     print("SVM accuracy: " + str(round(accuracy, 2)) + "%%")

@@ -119,9 +119,9 @@ def backprop(theta1, theta2, X, y, lambda_):
 
     grad1 = np.zeros((theta1.shape[0], theta1.shape[1]))
     grad2 = np.zeros((theta2.shape[0], theta2.shape[1]))
+
     for i in range(m):
         a3, a2, a1 = feed_forward(theta1, theta2, X[i, np.newaxis])
-
         d3 = a3 - y[i]                          # 1 x 10
 
         gZ = (a2 * (1 - a2))                    # 1 x 26
